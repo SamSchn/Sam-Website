@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { SPRITE_CATEGORIES } from './spriteManifest';
 
-function SheetGrid({ sheet, selectedTile, onSelectTile }) {
+function SheetGrid({ sheet, selectedTile, onSelectTile, onTileProps }) {
   const [dims, setDims] = useState(null);
 
   useEffect(() => {
@@ -54,15 +54,20 @@ function SheetGrid({ sheet, selectedTile, onSelectTile }) {
                   width: DISPLAY_CELL,
                   height: DISPLAY_CELL,
                 }}
-                onClick={() =>
+                onClick={() => {
                   onSelectTile({
                     sheet: sheet.path,
                     sprite_x: sx,
                     sprite_y: sy,
                     sprite_w: sheet.tileW,
                     sprite_h: sheet.tileH,
-                  })
-                }
+                  });
+                  // Auto-suggest animation frames for animated sheets
+                  if (sheet.animated && onTileProps) {
+                    const framesInRow = dims.cols - c;
+                    onTileProps(p => ({ ...p, anim_frames: framesInRow }));
+                  }
+                }}
               />
             );
           })
@@ -72,7 +77,50 @@ function SheetGrid({ sheet, selectedTile, onSelectTile }) {
   );
 }
 
-export default function SpritePalette({ selectedTile, onSelectTile }) {
+function AnimPreview({ tile, animFrames, animSpeed }) {
+  const canvasRef = useRef(null);
+
+  useEffect(() => {
+    if (!tile || animFrames <= 1) return;
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const ctx = canvas.getContext('2d');
+    const img = new Image();
+    let frame = 0;
+    let timer;
+
+    img.onload = () => {
+      const scale = 3;
+      canvas.width = tile.sprite_w * scale;
+      canvas.height = tile.sprite_h * scale;
+      ctx.imageSmoothingEnabled = false;
+
+      function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        const sx = tile.sprite_x + frame * tile.sprite_w;
+        ctx.drawImage(img, sx, tile.sprite_y, tile.sprite_w, tile.sprite_h, 0, 0, canvas.width, canvas.height);
+        frame = (frame + 1) % animFrames;
+      }
+
+      draw();
+      timer = setInterval(draw, animSpeed);
+    };
+    img.src = '/' + tile.sheet;
+
+    return () => clearInterval(timer);
+  }, [tile, animFrames, animSpeed]);
+
+  if (!tile || animFrames <= 1) return null;
+  return (
+    <div className="palette-anim-preview">
+      <span className="palette-anim-label">Animation preview ({animFrames} frames)</span>
+      <canvas ref={canvasRef} style={{ imageRendering: 'pixelated' }} />
+    </div>
+  );
+}
+
+export default function SpritePalette({ selectedTile, onSelectTile, tileProps, onTileProps }) {
   const [activeCategory, setActiveCategory] = useState(0);
   const [activeSheet, setActiveSheet] = useState(0);
   const [sheetDropOpen, setSheetDropOpen] = useState(false);
@@ -110,7 +158,7 @@ export default function SpritePalette({ selectedTile, onSelectTile }) {
           className="palette-sheet-toggle"
           onClick={() => setSheetDropOpen(o => !o)}
         >
-          <span className="palette-sheet-toggle-label">{sheet?.label ?? '—'}</span>
+          <span className="palette-sheet-toggle-label">{sheet?.label ?? '—'}{sheet?.animated ? ' ✦' : ''}</span>
           <span className="palette-sheet-toggle-arrow">{sheetDropOpen ? '▲' : '▼'}</span>
         </button>
         {sheetDropOpen && (
@@ -118,10 +166,10 @@ export default function SpritePalette({ selectedTile, onSelectTile }) {
             {category.sheets.map((s, i) => (
               <button
                 key={s.path}
-                className={`palette-sheet-option${i === activeSheet ? ' active' : ''}`}
+                className={`palette-sheet-option${i === activeSheet ? ' active' : ''}${s.animated ? ' animated' : ''}`}
                 onClick={() => pickSheet(i)}
               >
-                {s.label}
+                {s.label}{s.animated ? ' ✦' : ''}
               </button>
             ))}
           </div>
@@ -129,7 +177,7 @@ export default function SpritePalette({ selectedTile, onSelectTile }) {
       </div>
 
       {sheet && (
-        <SheetGrid sheet={sheet} selectedTile={selectedTile} onSelectTile={onSelectTile} />
+        <SheetGrid sheet={sheet} selectedTile={selectedTile} onSelectTile={onSelectTile} onTileProps={onTileProps} />
       )}
 
       {selectedTile && (
@@ -137,6 +185,12 @@ export default function SpritePalette({ selectedTile, onSelectTile }) {
           {selectedTile.sheet.split('/').pop()} [{selectedTile.sprite_x}, {selectedTile.sprite_y}]
         </div>
       )}
+
+      <AnimPreview
+        tile={selectedTile}
+        animFrames={tileProps?.anim_frames || 1}
+        animSpeed={tileProps?.anim_speed || 150}
+      />
     </div>
   );
 }

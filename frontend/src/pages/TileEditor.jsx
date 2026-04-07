@@ -18,7 +18,7 @@ export default function TileEditor() {
   const [selectedTile, setSelectedTile] = useState(null);
   const [activeLayer, setActiveLayer] = useState(0);
   const [tool, setTool] = useState('paint');
-  const [tileProps, setTileProps] = useState({ walkable: true, interactable: false, portal_target: '' });
+  const [tileProps, setTileProps] = useState({ walkable: true, interactable: false, portal_target: '', anim_frames: 1, anim_speed: 150 });
   const [layerVisibility, setLayerVisibility] = useState([true, true, true]);
   const [showGrid, setShowGrid] = useState(true);
 
@@ -219,12 +219,33 @@ export default function TileEditor() {
               onChange={e => setTileProps(p => ({ ...p, portal_target: e.target.value }))}
             />
           </label>
+          <label className="editor-toggle anim-input">
+            Frames
+            <input
+              type="number"
+              min={1}
+              max={64}
+              value={tileProps.anim_frames}
+              onChange={e => setTileProps(p => ({ ...p, anim_frames: Math.max(1, parseInt(e.target.value) || 1) }))}
+            />
+          </label>
+          <label className="editor-toggle anim-input">
+            Speed(ms)
+            <input
+              type="number"
+              min={30}
+              max={2000}
+              step={10}
+              value={tileProps.anim_speed}
+              onChange={e => setTileProps(p => ({ ...p, anim_speed: Math.max(30, parseInt(e.target.value) || 150) }))}
+            />
+          </label>
         </div>
       </div>
 
       {/* Main body */}
       <div className="editor-body">
-        <SpritePalette selectedTile={selectedTile} onSelectTile={setSelectedTile} />
+        <SpritePalette selectedTile={selectedTile} onSelectTile={setSelectedTile} tileProps={tileProps} onTileProps={setTileProps} />
 
         <EditorCanvas
           ref={canvasRef}

@@ -109,7 +109,8 @@ export const SPRITE_CATEGORIES = [
         "path": "sprites/tiles/Cave_Cave_Water_Animation.png",
         "tileW": 16,
         "tileH": 16,
-        "label": "Cave Cave Water Animation"
+        "label": "Cave Cave Water Animation",
+        "animated": true
       },
       {
         "path": "sprites/tiles/Cave_Rails.png",
@@ -343,7 +344,8 @@ export const SPRITE_CATEGORIES = [
         "path": "sprites/tiles/Water_Water_Foam_Animation.png",
         "tileW": 16,
         "tileH": 16,
-        "label": "Water Water Foam Animation"
+        "label": "Water Water Foam Animation",
+        "animated": true
       },
       {
         "path": "sprites/tiles/Water_Water_Middle.png",
@@ -373,7 +375,8 @@ export const SPRITE_CATEGORIES = [
         "path": "sprites/tiles/Water_Water_Stone_Tile_1_Anim.png",
         "tileW": 16,
         "tileH": 16,
-        "label": "Water Water Stone Tile 1 Anim"
+        "label": "Water Water Stone Tile 1 Anim",
+        "animated": true
       },
       {
         "path": "sprites/tiles/Water_Water_Stone_Tile_2.png",
@@ -385,7 +388,8 @@ export const SPRITE_CATEGORIES = [
         "path": "sprites/tiles/Water_Water_Stone_Tile_2_Anim.png",
         "tileW": 16,
         "tileH": 16,
-        "label": "Water Water Stone Tile 2 Anim"
+        "label": "Water Water Stone Tile 2 Anim",
+        "animated": true
       },
       {
         "path": "sprites/tiles/Water_Water_Stone_Tile_3.png",
@@ -397,7 +401,8 @@ export const SPRITE_CATEGORIES = [
         "path": "sprites/tiles/Water_Water_Stone_Tile_3_Anim.png",
         "tileW": 16,
         "tileH": 16,
-        "label": "Water Water Stone Tile 3 Anim"
+        "label": "Water Water Stone Tile 3 Anim",
+        "animated": true
       },
       {
         "path": "sprites/tiles/Water_Water_Stone_Tile_4.png",
@@ -409,7 +414,8 @@ export const SPRITE_CATEGORIES = [
         "path": "sprites/tiles/Water_Water_Stone_Tile_4_Anim.png",
         "tileW": 16,
         "tileH": 16,
-        "label": "Water Water Stone Tile 4 Anim"
+        "label": "Water Water Stone Tile 4 Anim",
+        "animated": true
       },
       {
         "path": "sprites/tiles/Water_Water_Tile_1.png",
@@ -421,7 +427,8 @@ export const SPRITE_CATEGORIES = [
         "path": "sprites/tiles/Water_Water_Tile_1_Anim.png",
         "tileW": 16,
         "tileH": 16,
-        "label": "Water Water Tile 1 Anim"
+        "label": "Water Water Tile 1 Anim",
+        "animated": true
       },
       {
         "path": "sprites/tiles/Water_Water_Tile_2.png",
@@ -433,7 +440,8 @@ export const SPRITE_CATEGORIES = [
         "path": "sprites/tiles/Water_Water_Tile_2_Anim.png",
         "tileW": 16,
         "tileH": 16,
-        "label": "Water Water Tile 2 Anim"
+        "label": "Water Water Tile 2 Anim",
+        "animated": true
       },
       {
         "path": "sprites/tiles/Water_Water_Tile_3.png",
@@ -445,7 +453,8 @@ export const SPRITE_CATEGORIES = [
         "path": "sprites/tiles/Water_Water_Tile_3_Anim.png",
         "tileW": 16,
         "tileH": 16,
-        "label": "Water Water Tile 3 Anim"
+        "label": "Water Water Tile 3 Anim",
+        "animated": true
       },
       {
         "path": "sprites/tiles/Water_Water_Tile_4.png",
@@ -457,7 +466,8 @@ export const SPRITE_CATEGORIES = [
         "path": "sprites/tiles/Water_Water_Tile_4_Anim.png",
         "tileW": 16,
         "tileH": 16,
-        "label": "Water Water Tile 4 Anim"
+        "label": "Water Water Tile 4 Anim",
+        "animated": true
       },
       {
         "path": "sprites/tiles/Waterfall_Waterfall_1.png",
@@ -1252,7 +1262,8 @@ export const SPRITE_CATEGORIES = [
         "path": "sprites/decor/Big_Torch_Anim.png",
         "tileW": 16,
         "tileH": 16,
-        "label": "Big Torch Anim"
+        "label": "Big Torch Anim",
+        "animated": true
       },
       {
         "path": "sprites/decor/Boat.png",
@@ -1288,25 +1299,29 @@ export const SPRITE_CATEGORIES = [
         "path": "sprites/decor/Flower_Grass_1_Anim.png",
         "tileW": 16,
         "tileH": 16,
-        "label": "Flower Grass 1 Anim"
+        "label": "Flower Grass 1 Anim",
+        "animated": true
       },
       {
         "path": "sprites/decor/Flower_Grass_5_Anim.png",
         "tileW": 16,
         "tileH": 16,
-        "label": "Flower Grass 5 Anim"
+        "label": "Flower Grass 5 Anim",
+        "animated": true
       },
       {
         "path": "sprites/decor/Flower_Grass_6_Anim.png",
         "tileW": 16,
         "tileH": 16,
-        "label": "Flower Grass 6 Anim"
+        "label": "Flower Grass 6 Anim",
+        "animated": true
       },
       {
         "path": "sprites/decor/Flower_Grass_8_Anim.png",
         "tileW": 16,
         "tileH": 16,
-        "label": "Flower Grass 8 Anim"
+        "label": "Flower Grass 8 Anim",
+        "animated": true
       },
       {
         "path": "sprites/decor/Flowers.png",
@@ -1342,13 +1357,15 @@ export const SPRITE_CATEGORIES = [
         "path": "sprites/decor/Lillypad_Green_1_Anim.png",
         "tileW": 16,
         "tileH": 16,
-        "label": "Lillypad Green 1 Anim"
+        "label": "Lillypad Green 1 Anim",
+        "animated": true
       },
       {
         "path": "sprites/decor/Lillypad_Purple_1_Anim.png",
         "tileW": 16,
         "tileH": 16,
-        "label": "Lillypad Purple 1 Anim"
+        "label": "Lillypad Purple 1 Anim",
+        "animated": true
       },
       {
         "path": "sprites/decor/Minecrats.png",
@@ -1378,253 +1395,295 @@ export const SPRITE_CATEGORIES = [
         "path": "sprites/decor/Outdoor_Decor_Animations_Break_Animations_Barrel_1_Anim.png",
         "tileW": 16,
         "tileH": 16,
-        "label": "Outdoor Decor Animations Break Animations Barrel 1 Anim"
+        "label": "Outdoor Decor Animations Break Animations Barrel 1 Anim",
+        "animated": true
       },
       {
         "path": "sprites/decor/Outdoor_Decor_Animations_Break_Animations_Crate_Anim.png",
         "tileW": 16,
         "tileH": 16,
-        "label": "Outdoor Decor Animations Break Animations Crate Anim"
+        "label": "Outdoor Decor Animations Break Animations Crate Anim",
+        "animated": true
       },
       {
         "path": "sprites/decor/Outdoor_Decor_Animations_Break_Animations_Sign_1_Anim.png",
         "tileW": 16,
         "tileH": 16,
-        "label": "Outdoor Decor Animations Break Animations Sign 1 Anim"
+        "label": "Outdoor Decor Animations Break Animations Sign 1 Anim",
+        "animated": true
       },
       {
         "path": "sprites/decor/Outdoor_Decor_Animations_Break_Animations_Sign_2_Anim.png",
         "tileW": 16,
         "tileH": 16,
-        "label": "Outdoor Decor Animations Break Animations Sign 2 Anim"
+        "label": "Outdoor Decor Animations Break Animations Sign 2 Anim",
+        "animated": true
       },
       {
         "path": "sprites/decor/Outdoor_Decor_Animations_Flower_Animations_Not_Potted_Flowers_1_Anim.png",
         "tileW": 16,
         "tileH": 16,
-        "label": "Outdoor Decor Animations Flower Animations Not Potted Flowers 1 Anim"
+        "label": "Outdoor Decor Animations Flower Animations Not Potted Flowers 1 Anim",
+        "animated": true
       },
       {
         "path": "sprites/decor/Outdoor_Decor_Animations_Flower_Animations_Not_Potted_Flowers_2_Anim.png",
         "tileW": 16,
         "tileH": 16,
-        "label": "Outdoor Decor Animations Flower Animations Not Potted Flowers 2 Anim"
+        "label": "Outdoor Decor Animations Flower Animations Not Potted Flowers 2 Anim",
+        "animated": true
       },
       {
         "path": "sprites/decor/Outdoor_Decor_Animations_Flower_Animations_Not_Potted_Flowers_3_Anim.png",
         "tileW": 16,
         "tileH": 16,
-        "label": "Outdoor Decor Animations Flower Animations Not Potted Flowers 3 Anim"
+        "label": "Outdoor Decor Animations Flower Animations Not Potted Flowers 3 Anim",
+        "animated": true
       },
       {
         "path": "sprites/decor/Outdoor_Decor_Animations_Flower_Animations_Not_Potted_Flowers_4_Anim.png",
         "tileW": 16,
         "tileH": 16,
-        "label": "Outdoor Decor Animations Flower Animations Not Potted Flowers 4 Anim"
+        "label": "Outdoor Decor Animations Flower Animations Not Potted Flowers 4 Anim",
+        "animated": true
       },
       {
         "path": "sprites/decor/Outdoor_Decor_Animations_Flower_Animations_Not_Potted_Flowers_5_Anim.png",
         "tileW": 16,
         "tileH": 16,
-        "label": "Outdoor Decor Animations Flower Animations Not Potted Flowers 5 Anim"
+        "label": "Outdoor Decor Animations Flower Animations Not Potted Flowers 5 Anim",
+        "animated": true
       },
       {
         "path": "sprites/decor/Outdoor_Decor_Animations_Flower_Animations_Potted_Flowers_1_Potted_Anim.png",
         "tileW": 16,
         "tileH": 16,
-        "label": "Outdoor Decor Animations Flower Animations Potted Flowers 1 Potted Anim"
+        "label": "Outdoor Decor Animations Flower Animations Potted Flowers 1 Potted Anim",
+        "animated": true
       },
       {
         "path": "sprites/decor/Outdoor_Decor_Animations_Flower_Animations_Potted_Flowers_2_Potted_Anim.png",
         "tileW": 16,
         "tileH": 16,
-        "label": "Outdoor Decor Animations Flower Animations Potted Flowers 2 Potted Anim"
+        "label": "Outdoor Decor Animations Flower Animations Potted Flowers 2 Potted Anim",
+        "animated": true
       },
       {
         "path": "sprites/decor/Outdoor_Decor_Animations_Flower_Animations_Potted_Flowers_3_Potted_Anim.png",
         "tileW": 16,
         "tileH": 16,
-        "label": "Outdoor Decor Animations Flower Animations Potted Flowers 3 Potted Anim"
+        "label": "Outdoor Decor Animations Flower Animations Potted Flowers 3 Potted Anim",
+        "animated": true
       },
       {
         "path": "sprites/decor/Outdoor_Decor_Animations_Flower_Animations_Potted_Flowers_4_Potted_Anim.png",
         "tileW": 16,
         "tileH": 16,
-        "label": "Outdoor Decor Animations Flower Animations Potted Flowers 4 Potted Anim"
+        "label": "Outdoor Decor Animations Flower Animations Potted Flowers 4 Potted Anim",
+        "animated": true
       },
       {
         "path": "sprites/decor/Outdoor_Decor_Animations_Flower_Animations_Potted_Flowers_5_Potted_Anim.png",
         "tileW": 16,
         "tileH": 16,
-        "label": "Outdoor Decor Animations Flower Animations Potted Flowers 5 Potted Anim"
+        "label": "Outdoor Decor Animations Flower Animations Potted Flowers 5 Potted Anim",
+        "animated": true
       },
       {
         "path": "sprites/decor/Outdoor_Decor_Animations_Grass_Animations_Flower_Grass_10_Anim.png",
         "tileW": 16,
         "tileH": 16,
-        "label": "Outdoor Decor Animations Grass Animations Flower Grass 10 Anim"
+        "label": "Outdoor Decor Animations Grass Animations Flower Grass 10 Anim",
+        "animated": true
       },
       {
         "path": "sprites/decor/Outdoor_Decor_Animations_Grass_Animations_Flower_Grass_11_Anim.png",
         "tileW": 16,
         "tileH": 16,
-        "label": "Outdoor Decor Animations Grass Animations Flower Grass 11 Anim"
+        "label": "Outdoor Decor Animations Grass Animations Flower Grass 11 Anim",
+        "animated": true
       },
       {
         "path": "sprites/decor/Outdoor_Decor_Animations_Grass_Animations_Flower_Grass_12_Anim.png",
         "tileW": 16,
         "tileH": 16,
-        "label": "Outdoor Decor Animations Grass Animations Flower Grass 12 Anim"
+        "label": "Outdoor Decor Animations Grass Animations Flower Grass 12 Anim",
+        "animated": true
       },
       {
         "path": "sprites/decor/Outdoor_Decor_Animations_Grass_Animations_Flower_Grass_13_Anim.png",
         "tileW": 16,
         "tileH": 16,
-        "label": "Outdoor Decor Animations Grass Animations Flower Grass 13 Anim"
+        "label": "Outdoor Decor Animations Grass Animations Flower Grass 13 Anim",
+        "animated": true
       },
       {
         "path": "sprites/decor/Outdoor_Decor_Animations_Grass_Animations_Flower_Grass_14_Anim.png",
         "tileW": 16,
         "tileH": 16,
-        "label": "Outdoor Decor Animations Grass Animations Flower Grass 14 Anim"
+        "label": "Outdoor Decor Animations Grass Animations Flower Grass 14 Anim",
+        "animated": true
       },
       {
         "path": "sprites/decor/Outdoor_Decor_Animations_Grass_Animations_Flower_Grass_15_Anim.png",
         "tileW": 16,
         "tileH": 16,
-        "label": "Outdoor Decor Animations Grass Animations Flower Grass 15 Anim"
+        "label": "Outdoor Decor Animations Grass Animations Flower Grass 15 Anim",
+        "animated": true
       },
       {
         "path": "sprites/decor/Outdoor_Decor_Animations_Grass_Animations_Flower_Grass_1_Anim.png",
         "tileW": 16,
         "tileH": 16,
-        "label": "Outdoor Decor Animations Grass Animations Flower Grass 1 Anim"
+        "label": "Outdoor Decor Animations Grass Animations Flower Grass 1 Anim",
+        "animated": true
       },
       {
         "path": "sprites/decor/Outdoor_Decor_Animations_Grass_Animations_Flower_Grass_2_Anim.png",
         "tileW": 16,
         "tileH": 16,
-        "label": "Outdoor Decor Animations Grass Animations Flower Grass 2 Anim"
+        "label": "Outdoor Decor Animations Grass Animations Flower Grass 2 Anim",
+        "animated": true
       },
       {
         "path": "sprites/decor/Outdoor_Decor_Animations_Grass_Animations_Flower_Grass_3_Anim.png",
         "tileW": 16,
         "tileH": 16,
-        "label": "Outdoor Decor Animations Grass Animations Flower Grass 3 Anim"
+        "label": "Outdoor Decor Animations Grass Animations Flower Grass 3 Anim",
+        "animated": true
       },
       {
         "path": "sprites/decor/Outdoor_Decor_Animations_Grass_Animations_Flower_Grass_4_Anim.png",
         "tileW": 16,
         "tileH": 16,
-        "label": "Outdoor Decor Animations Grass Animations Flower Grass 4 Anim"
+        "label": "Outdoor Decor Animations Grass Animations Flower Grass 4 Anim",
+        "animated": true
       },
       {
         "path": "sprites/decor/Outdoor_Decor_Animations_Grass_Animations_Flower_Grass_5_Anim.png",
         "tileW": 16,
         "tileH": 16,
-        "label": "Outdoor Decor Animations Grass Animations Flower Grass 5 Anim"
+        "label": "Outdoor Decor Animations Grass Animations Flower Grass 5 Anim",
+        "animated": true
       },
       {
         "path": "sprites/decor/Outdoor_Decor_Animations_Grass_Animations_Flower_Grass_6_Anim.png",
         "tileW": 16,
         "tileH": 16,
-        "label": "Outdoor Decor Animations Grass Animations Flower Grass 6 Anim"
+        "label": "Outdoor Decor Animations Grass Animations Flower Grass 6 Anim",
+        "animated": true
       },
       {
         "path": "sprites/decor/Outdoor_Decor_Animations_Grass_Animations_Flower_Grass_7_Anim.png",
         "tileW": 16,
         "tileH": 16,
-        "label": "Outdoor Decor Animations Grass Animations Flower Grass 7 Anim"
+        "label": "Outdoor Decor Animations Grass Animations Flower Grass 7 Anim",
+        "animated": true
       },
       {
         "path": "sprites/decor/Outdoor_Decor_Animations_Grass_Animations_Flower_Grass_8_Anim.png",
         "tileW": 16,
         "tileH": 16,
-        "label": "Outdoor Decor Animations Grass Animations Flower Grass 8 Anim"
+        "label": "Outdoor Decor Animations Grass Animations Flower Grass 8 Anim",
+        "animated": true
       },
       {
         "path": "sprites/decor/Outdoor_Decor_Animations_Grass_Animations_Flower_Grass_9_Anim.png",
         "tileW": 16,
         "tileH": 16,
-        "label": "Outdoor Decor Animations Grass Animations Flower Grass 9 Anim"
+        "label": "Outdoor Decor Animations Grass Animations Flower Grass 9 Anim",
+        "animated": true
       },
       {
         "path": "sprites/decor/Outdoor_Decor_Animations_Grass_Animations_Grass_1_Anim.png",
         "tileW": 16,
         "tileH": 16,
-        "label": "Outdoor Decor Animations Grass Animations Grass 1 Anim"
+        "label": "Outdoor Decor Animations Grass Animations Grass 1 Anim",
+        "animated": true
       },
       {
         "path": "sprites/decor/Outdoor_Decor_Animations_Grass_Animations_Grass_2_Anim.png",
         "tileW": 16,
         "tileH": 16,
-        "label": "Outdoor Decor Animations Grass Animations Grass 2 Anim"
+        "label": "Outdoor Decor Animations Grass Animations Grass 2 Anim",
+        "animated": true
       },
       {
         "path": "sprites/decor/Outdoor_Decor_Animations_Grass_Animations_Grass_3_Anim.png",
         "tileW": 16,
         "tileH": 16,
-        "label": "Outdoor Decor Animations Grass Animations Grass 3 Anim"
+        "label": "Outdoor Decor Animations Grass Animations Grass 3 Anim",
+        "animated": true
       },
       {
         "path": "sprites/decor/Outdoor_Decor_Animations_Muschroom_Animations_muschroom_1_Anim.png",
         "tileW": 16,
         "tileH": 16,
-        "label": "Outdoor Decor Animations Muschroom Animations muschroom 1 Anim"
+        "label": "Outdoor Decor Animations Muschroom Animations muschroom 1 Anim",
+        "animated": true
       },
       {
         "path": "sprites/decor/Outdoor_Decor_Animations_Muschroom_Animations_muschroom_2_Anim.png",
         "tileW": 16,
         "tileH": 16,
-        "label": "Outdoor Decor Animations Muschroom Animations muschroom 2 Anim"
+        "label": "Outdoor Decor Animations Muschroom Animations muschroom 2 Anim",
+        "animated": true
       },
       {
         "path": "sprites/decor/Outdoor_Decor_Animations_Muschroom_Animations_muschroom_3_Anim.png",
         "tileW": 16,
         "tileH": 16,
-        "label": "Outdoor Decor Animations Muschroom Animations muschroom 3 Anim"
+        "label": "Outdoor Decor Animations Muschroom Animations muschroom 3 Anim",
+        "animated": true
       },
       {
         "path": "sprites/decor/Outdoor_Decor_Animations_Muschroom_Animations_muschroom_4_Anim.png",
         "tileW": 16,
         "tileH": 16,
-        "label": "Outdoor Decor Animations Muschroom Animations muschroom 4 Anim"
+        "label": "Outdoor Decor Animations Muschroom Animations muschroom 4 Anim",
+        "animated": true
       },
       {
         "path": "sprites/decor/Outdoor_Decor_Animations_Muschroom_Animations_muschroom_5_Anim.png",
         "tileW": 16,
         "tileH": 16,
-        "label": "Outdoor Decor Animations Muschroom Animations muschroom 5 Anim"
+        "label": "Outdoor Decor Animations Muschroom Animations muschroom 5 Anim",
+        "animated": true
       },
       {
         "path": "sprites/decor/Outdoor_Decor_Animations_Muschroom_Animations_muschroom_6_Anim.png",
         "tileW": 16,
         "tileH": 16,
-        "label": "Outdoor Decor Animations Muschroom Animations muschroom 6 Anim"
+        "label": "Outdoor Decor Animations Muschroom Animations muschroom 6 Anim",
+        "animated": true
       },
       {
         "path": "sprites/decor/Outdoor_Decor_Animations_Muschroom_Animations_muschroom_7_Anim.png",
         "tileW": 16,
         "tileH": 16,
-        "label": "Outdoor Decor Animations Muschroom Animations muschroom 7 Anim"
+        "label": "Outdoor Decor Animations Muschroom Animations muschroom 7 Anim",
+        "animated": true
       },
       {
         "path": "sprites/decor/Outdoor_Decor_Animations_Muschroom_Animations_muschroom_8_Anim.png",
         "tileW": 16,
         "tileH": 16,
-        "label": "Outdoor Decor Animations Muschroom Animations muschroom 8 Anim"
+        "label": "Outdoor Decor Animations Muschroom Animations muschroom 8 Anim",
+        "animated": true
       },
       {
         "path": "sprites/decor/Outdoor_Decor_Animations_Other_Animations_Boat_Anim.png",
         "tileW": 16,
         "tileH": 16,
-        "label": "Outdoor Decor Animations Other Animations Boat Anim"
+        "label": "Outdoor Decor Animations Other Animations Boat Anim",
+        "animated": true
       },
       {
         "path": "sprites/decor/Outdoor_Decor_Animations_Other_Animations_Campfire_Anim.png",
         "tileW": 16,
         "tileH": 16,
-        "label": "Outdoor Decor Animations Other Animations Campfire Anim"
+        "label": "Outdoor Decor Animations Other Animations Campfire Anim",
+        "animated": true
       },
       {
         "path": "sprites/decor/Outdoor_Decor_Animations_Other_Animations_Fence_Big_Gate.png",
@@ -1642,301 +1701,351 @@ export const SPRITE_CATEGORIES = [
         "path": "sprites/decor/Outdoor_Decor_Animations_Other_Animations_Fountain_Anim.png",
         "tileW": 16,
         "tileH": 16,
-        "label": "Outdoor Decor Animations Other Animations Fountain Anim"
+        "label": "Outdoor Decor Animations Other Animations Fountain Anim",
+        "animated": true
       },
       {
         "path": "sprites/decor/Outdoor_Decor_Animations_Other_Animations_Pole_and_Bunting_1_Anim.png",
         "tileW": 16,
         "tileH": 16,
-        "label": "Outdoor Decor Animations Other Animations Pole and Bunting 1 Anim"
+        "label": "Outdoor Decor Animations Other Animations Pole and Bunting 1 Anim",
+        "animated": true
       },
       {
         "path": "sprites/decor/Outdoor_Decor_Animations_Other_Animations_Pole_and_Bunting_2_Anim.png",
         "tileW": 16,
         "tileH": 16,
-        "label": "Outdoor Decor Animations Other Animations Pole and Bunting 2 Anim"
+        "label": "Outdoor Decor Animations Other Animations Pole and Bunting 2 Anim",
+        "animated": true
       },
       {
         "path": "sprites/decor/Outdoor_Decor_Animations_Other_Animations_Torch_Anim.png",
         "tileW": 16,
         "tileH": 16,
-        "label": "Outdoor Decor Animations Other Animations Torch Anim"
+        "label": "Outdoor Decor Animations Other Animations Torch Anim",
+        "animated": true
       },
       {
         "path": "sprites/decor/Outdoor_Decor_Animations_Other_Animations_Torch_small_anim.png",
         "tileW": 16,
         "tileH": 16,
-        "label": "Outdoor Decor Animations Other Animations Torch small anim"
+        "label": "Outdoor Decor Animations Other Animations Torch small anim",
+        "animated": true
       },
       {
         "path": "sprites/decor/Outdoor_Decor_Animations_Rock_Animations_Cave_Rock_1_Anim.png",
         "tileW": 16,
         "tileH": 16,
-        "label": "Outdoor Decor Animations Rock Animations Cave Rock 1 Anim"
+        "label": "Outdoor Decor Animations Rock Animations Cave Rock 1 Anim",
+        "animated": true
       },
       {
         "path": "sprites/decor/Outdoor_Decor_Animations_Rock_Animations_Cave_Rock_2_Anim.png",
         "tileW": 16,
         "tileH": 16,
-        "label": "Outdoor Decor Animations Rock Animations Cave Rock 2 Anim"
+        "label": "Outdoor Decor Animations Rock Animations Cave Rock 2 Anim",
+        "animated": true
       },
       {
         "path": "sprites/decor/Outdoor_Decor_Animations_Rock_Animations_Cave_Rock_3_Anim.png",
         "tileW": 16,
         "tileH": 16,
-        "label": "Outdoor Decor Animations Rock Animations Cave Rock 3 Anim"
+        "label": "Outdoor Decor Animations Rock Animations Cave Rock 3 Anim",
+        "animated": true
       },
       {
         "path": "sprites/decor/Outdoor_Decor_Animations_Rock_Animations_Cave_Rock_4_Anim.png",
         "tileW": 16,
         "tileH": 16,
-        "label": "Outdoor Decor Animations Rock Animations Cave Rock 4 Anim"
+        "label": "Outdoor Decor Animations Rock Animations Cave Rock 4 Anim",
+        "animated": true
       },
       {
         "path": "sprites/decor/Outdoor_Decor_Animations_Rock_Animations_Rock_10_Anim.png",
         "tileW": 16,
         "tileH": 16,
-        "label": "Outdoor Decor Animations Rock Animations Rock 10 Anim"
+        "label": "Outdoor Decor Animations Rock Animations Rock 10 Anim",
+        "animated": true
       },
       {
         "path": "sprites/decor/Outdoor_Decor_Animations_Rock_Animations_Rock_11_Anim.png",
         "tileW": 16,
         "tileH": 16,
-        "label": "Outdoor Decor Animations Rock Animations Rock 11 Anim"
+        "label": "Outdoor Decor Animations Rock Animations Rock 11 Anim",
+        "animated": true
       },
       {
         "path": "sprites/decor/Outdoor_Decor_Animations_Rock_Animations_Rock_12_Anim.png",
         "tileW": 16,
         "tileH": 16,
-        "label": "Outdoor Decor Animations Rock Animations Rock 12 Anim"
+        "label": "Outdoor Decor Animations Rock Animations Rock 12 Anim",
+        "animated": true
       },
       {
         "path": "sprites/decor/Outdoor_Decor_Animations_Rock_Animations_Rock_13_Anim.png",
         "tileW": 16,
         "tileH": 16,
-        "label": "Outdoor Decor Animations Rock Animations Rock 13 Anim"
+        "label": "Outdoor Decor Animations Rock Animations Rock 13 Anim",
+        "animated": true
       },
       {
         "path": "sprites/decor/Outdoor_Decor_Animations_Rock_Animations_Rock_14_Anim.png",
         "tileW": 16,
         "tileH": 16,
-        "label": "Outdoor Decor Animations Rock Animations Rock 14 Anim"
+        "label": "Outdoor Decor Animations Rock Animations Rock 14 Anim",
+        "animated": true
       },
       {
         "path": "sprites/decor/Outdoor_Decor_Animations_Rock_Animations_Rock_1_Anim.png",
         "tileW": 16,
         "tileH": 16,
-        "label": "Outdoor Decor Animations Rock Animations Rock 1 Anim"
+        "label": "Outdoor Decor Animations Rock Animations Rock 1 Anim",
+        "animated": true
       },
       {
         "path": "sprites/decor/Outdoor_Decor_Animations_Rock_Animations_Rock_2_Anim.png",
         "tileW": 16,
         "tileH": 16,
-        "label": "Outdoor Decor Animations Rock Animations Rock 2 Anim"
+        "label": "Outdoor Decor Animations Rock Animations Rock 2 Anim",
+        "animated": true
       },
       {
         "path": "sprites/decor/Outdoor_Decor_Animations_Rock_Animations_Rock_3_Anim.png",
         "tileW": 16,
         "tileH": 16,
-        "label": "Outdoor Decor Animations Rock Animations Rock 3 Anim"
+        "label": "Outdoor Decor Animations Rock Animations Rock 3 Anim",
+        "animated": true
       },
       {
         "path": "sprites/decor/Outdoor_Decor_Animations_Rock_Animations_Rock_4_Anim.png",
         "tileW": 16,
         "tileH": 16,
-        "label": "Outdoor Decor Animations Rock Animations Rock 4 Anim"
+        "label": "Outdoor Decor Animations Rock Animations Rock 4 Anim",
+        "animated": true
       },
       {
         "path": "sprites/decor/Outdoor_Decor_Animations_Rock_Animations_Rock_5_Anim.png",
         "tileW": 16,
         "tileH": 16,
-        "label": "Outdoor Decor Animations Rock Animations Rock 5 Anim"
+        "label": "Outdoor Decor Animations Rock Animations Rock 5 Anim",
+        "animated": true
       },
       {
         "path": "sprites/decor/Outdoor_Decor_Animations_Rock_Animations_Rock_6_Anim.png",
         "tileW": 16,
         "tileH": 16,
-        "label": "Outdoor Decor Animations Rock Animations Rock 6 Anim"
+        "label": "Outdoor Decor Animations Rock Animations Rock 6 Anim",
+        "animated": true
       },
       {
         "path": "sprites/decor/Outdoor_Decor_Animations_Rock_Animations_Rock_7_Anim.png",
         "tileW": 16,
         "tileH": 16,
-        "label": "Outdoor Decor Animations Rock Animations Rock 7 Anim"
+        "label": "Outdoor Decor Animations Rock Animations Rock 7 Anim",
+        "animated": true
       },
       {
         "path": "sprites/decor/Outdoor_Decor_Animations_Rock_Animations_Rock_8_Anim.png",
         "tileW": 16,
         "tileH": 16,
-        "label": "Outdoor Decor Animations Rock Animations Rock 8 Anim"
+        "label": "Outdoor Decor Animations Rock Animations Rock 8 Anim",
+        "animated": true
       },
       {
         "path": "sprites/decor/Outdoor_Decor_Animations_Rock_Animations_Rock_9_Anim.png",
         "tileW": 16,
         "tileH": 16,
-        "label": "Outdoor Decor Animations Rock Animations Rock 9 Anim"
+        "label": "Outdoor Decor Animations Rock Animations Rock 9 Anim",
+        "animated": true
       },
       {
         "path": "sprites/decor/Outdoor_Decor_Animations_Water_Decor_Animations_Other_Water_Decor_Branch_Water_Anim.png",
         "tileW": 16,
         "tileH": 16,
-        "label": "Outdoor Decor Animations Water Decor Animations Other Water Decor Branch Water Anim"
+        "label": "Outdoor Decor Animations Water Decor Animations Other Water Decor Branch Water Anim",
+        "animated": true
       },
       {
         "path": "sprites/decor/Outdoor_Decor_Animations_Water_Decor_Animations_Other_Water_Decor_Log_1_Water_Anim.png",
         "tileW": 16,
         "tileH": 16,
-        "label": "Outdoor Decor Animations Water Decor Animations Other Water Decor Log 1 Water Anim"
+        "label": "Outdoor Decor Animations Water Decor Animations Other Water Decor Log 1 Water Anim",
+        "animated": true
       },
       {
         "path": "sprites/decor/Outdoor_Decor_Animations_Water_Decor_Animations_Other_Water_Decor_Log_2_Water_Anim.png",
         "tileW": 16,
         "tileH": 16,
-        "label": "Outdoor Decor Animations Water Decor Animations Other Water Decor Log 2 Water Anim"
+        "label": "Outdoor Decor Animations Water Decor Animations Other Water Decor Log 2 Water Anim",
+        "animated": true
       },
       {
         "path": "sprites/decor/Outdoor_Decor_Animations_Water_Decor_Animations_Other_Water_Decor_Log_3_Water_Anim.png",
         "tileW": 16,
         "tileH": 16,
-        "label": "Outdoor Decor Animations Water Decor Animations Other Water Decor Log 3 Water Anim"
+        "label": "Outdoor Decor Animations Water Decor Animations Other Water Decor Log 3 Water Anim",
+        "animated": true
       },
       {
         "path": "sprites/decor/Outdoor_Decor_Animations_Water_Decor_Animations_Water_Plants_Cattail_1_Anim.png",
         "tileW": 16,
         "tileH": 16,
-        "label": "Outdoor Decor Animations Water Decor Animations Water Plants Cattail 1 Anim"
+        "label": "Outdoor Decor Animations Water Decor Animations Water Plants Cattail 1 Anim",
+        "animated": true
       },
       {
         "path": "sprites/decor/Outdoor_Decor_Animations_Water_Decor_Animations_Water_Plants_Cattail_2_Anim.png",
         "tileW": 16,
         "tileH": 16,
-        "label": "Outdoor Decor Animations Water Decor Animations Water Plants Cattail 2 Anim"
+        "label": "Outdoor Decor Animations Water Decor Animations Water Plants Cattail 2 Anim",
+        "animated": true
       },
       {
         "path": "sprites/decor/Outdoor_Decor_Animations_Water_Decor_Animations_Water_Plants_Cattail_3_Anim.png",
         "tileW": 16,
         "tileH": 16,
-        "label": "Outdoor Decor Animations Water Decor Animations Water Plants Cattail 3 Anim"
+        "label": "Outdoor Decor Animations Water Decor Animations Water Plants Cattail 3 Anim",
+        "animated": true
       },
       {
         "path": "sprites/decor/Outdoor_Decor_Animations_Water_Decor_Animations_Water_Plants_Cattail_4_Anim.png",
         "tileW": 16,
         "tileH": 16,
-        "label": "Outdoor Decor Animations Water Decor Animations Water Plants Cattail 4 Anim"
+        "label": "Outdoor Decor Animations Water Decor Animations Water Plants Cattail 4 Anim",
+        "animated": true
       },
       {
         "path": "sprites/decor/Outdoor_Decor_Animations_Water_Decor_Animations_Water_Plants_Cattail_5_Anim.png",
         "tileW": 16,
         "tileH": 16,
-        "label": "Outdoor Decor Animations Water Decor Animations Water Plants Cattail 5 Anim"
+        "label": "Outdoor Decor Animations Water Decor Animations Water Plants Cattail 5 Anim",
+        "animated": true
       },
       {
         "path": "sprites/decor/Outdoor_Decor_Animations_Water_Decor_Animations_Water_Plants_Lillypad_Brown_1_Anim.png",
         "tileW": 16,
         "tileH": 16,
-        "label": "Outdoor Decor Animations Water Decor Animations Water Plants Lillypad Brown 1 Anim"
+        "label": "Outdoor Decor Animations Water Decor Animations Water Plants Lillypad Brown 1 Anim",
+        "animated": true
       },
       {
         "path": "sprites/decor/Outdoor_Decor_Animations_Water_Decor_Animations_Water_Plants_Lillypad_Brown_2_Anim.png",
         "tileW": 16,
         "tileH": 16,
-        "label": "Outdoor Decor Animations Water Decor Animations Water Plants Lillypad Brown 2 Anim"
+        "label": "Outdoor Decor Animations Water Decor Animations Water Plants Lillypad Brown 2 Anim",
+        "animated": true
       },
       {
         "path": "sprites/decor/Outdoor_Decor_Animations_Water_Decor_Animations_Water_Plants_Lillypad_Brown_3_Anim.png",
         "tileW": 16,
         "tileH": 16,
-        "label": "Outdoor Decor Animations Water Decor Animations Water Plants Lillypad Brown 3 Anim"
+        "label": "Outdoor Decor Animations Water Decor Animations Water Plants Lillypad Brown 3 Anim",
+        "animated": true
       },
       {
         "path": "sprites/decor/Outdoor_Decor_Animations_Water_Decor_Animations_Water_Plants_Lillypad_Brown_4_Anim.png",
         "tileW": 16,
         "tileH": 16,
-        "label": "Outdoor Decor Animations Water Decor Animations Water Plants Lillypad Brown 4 Anim"
+        "label": "Outdoor Decor Animations Water Decor Animations Water Plants Lillypad Brown 4 Anim",
+        "animated": true
       },
       {
         "path": "sprites/decor/Outdoor_Decor_Animations_Water_Decor_Animations_Water_Plants_Lillypad_Brown_5_Anim.png",
         "tileW": 16,
         "tileH": 16,
-        "label": "Outdoor Decor Animations Water Decor Animations Water Plants Lillypad Brown 5 Anim"
+        "label": "Outdoor Decor Animations Water Decor Animations Water Plants Lillypad Brown 5 Anim",
+        "animated": true
       },
       {
         "path": "sprites/decor/Outdoor_Decor_Animations_Water_Decor_Animations_Water_Plants_Lillypad_Brown_6_Anim.png",
         "tileW": 16,
         "tileH": 16,
-        "label": "Outdoor Decor Animations Water Decor Animations Water Plants Lillypad Brown 6 Anim"
+        "label": "Outdoor Decor Animations Water Decor Animations Water Plants Lillypad Brown 6 Anim",
+        "animated": true
       },
       {
         "path": "sprites/decor/Outdoor_Decor_Animations_Water_Decor_Animations_Water_Plants_Lillypad_Green_1_Anim.png",
         "tileW": 16,
         "tileH": 16,
-        "label": "Outdoor Decor Animations Water Decor Animations Water Plants Lillypad Green 1 Anim"
+        "label": "Outdoor Decor Animations Water Decor Animations Water Plants Lillypad Green 1 Anim",
+        "animated": true
       },
       {
         "path": "sprites/decor/Outdoor_Decor_Animations_Water_Decor_Animations_Water_Plants_Lillypad_Green_2_Anim.png",
         "tileW": 16,
         "tileH": 16,
-        "label": "Outdoor Decor Animations Water Decor Animations Water Plants Lillypad Green 2 Anim"
+        "label": "Outdoor Decor Animations Water Decor Animations Water Plants Lillypad Green 2 Anim",
+        "animated": true
       },
       {
         "path": "sprites/decor/Outdoor_Decor_Animations_Water_Decor_Animations_Water_Plants_Lillypad_Green_3_Anim.png",
         "tileW": 16,
         "tileH": 16,
-        "label": "Outdoor Decor Animations Water Decor Animations Water Plants Lillypad Green 3 Anim"
+        "label": "Outdoor Decor Animations Water Decor Animations Water Plants Lillypad Green 3 Anim",
+        "animated": true
       },
       {
         "path": "sprites/decor/Outdoor_Decor_Animations_Water_Decor_Animations_Water_Plants_Lillypad_Green_4_Anim.png",
         "tileW": 16,
         "tileH": 16,
-        "label": "Outdoor Decor Animations Water Decor Animations Water Plants Lillypad Green 4 Anim"
+        "label": "Outdoor Decor Animations Water Decor Animations Water Plants Lillypad Green 4 Anim",
+        "animated": true
       },
       {
         "path": "sprites/decor/Outdoor_Decor_Animations_Water_Decor_Animations_Water_Plants_Lillypad_Green_5_Anim.png",
         "tileW": 16,
         "tileH": 16,
-        "label": "Outdoor Decor Animations Water Decor Animations Water Plants Lillypad Green 5 Anim"
+        "label": "Outdoor Decor Animations Water Decor Animations Water Plants Lillypad Green 5 Anim",
+        "animated": true
       },
       {
         "path": "sprites/decor/Outdoor_Decor_Animations_Water_Decor_Animations_Water_Plants_Lillypad_Green_6_Anim.png",
         "tileW": 16,
         "tileH": 16,
-        "label": "Outdoor Decor Animations Water Decor Animations Water Plants Lillypad Green 6 Anim"
+        "label": "Outdoor Decor Animations Water Decor Animations Water Plants Lillypad Green 6 Anim",
+        "animated": true
       },
       {
         "path": "sprites/decor/Outdoor_Decor_Animations_Water_Decor_Animations_Water_Plants_Lillypad_Purple_1_Anim.png",
         "tileW": 16,
         "tileH": 16,
-        "label": "Outdoor Decor Animations Water Decor Animations Water Plants Lillypad Purple 1 Anim"
+        "label": "Outdoor Decor Animations Water Decor Animations Water Plants Lillypad Purple 1 Anim",
+        "animated": true
       },
       {
         "path": "sprites/decor/Outdoor_Decor_Animations_Water_Decor_Animations_Water_Plants_Lillypad_Purple_2_Anim.png",
         "tileW": 16,
         "tileH": 16,
-        "label": "Outdoor Decor Animations Water Decor Animations Water Plants Lillypad Purple 2 Anim"
+        "label": "Outdoor Decor Animations Water Decor Animations Water Plants Lillypad Purple 2 Anim",
+        "animated": true
       },
       {
         "path": "sprites/decor/Outdoor_Decor_Animations_Water_Decor_Animations_Water_Plants_Lillypad_Purple_3_Anim.png",
         "tileW": 16,
         "tileH": 16,
-        "label": "Outdoor Decor Animations Water Decor Animations Water Plants Lillypad Purple 3 Anim"
+        "label": "Outdoor Decor Animations Water Decor Animations Water Plants Lillypad Purple 3 Anim",
+        "animated": true
       },
       {
         "path": "sprites/decor/Outdoor_Decor_Animations_Water_Decor_Animations_Water_Plants_Lillypad_Purple_4_Anim.png",
         "tileW": 16,
         "tileH": 16,
-        "label": "Outdoor Decor Animations Water Decor Animations Water Plants Lillypad Purple 4 Anim"
+        "label": "Outdoor Decor Animations Water Decor Animations Water Plants Lillypad Purple 4 Anim",
+        "animated": true
       },
       {
         "path": "sprites/decor/Rock_1_Anim.png",
         "tileW": 16,
         "tileH": 16,
-        "label": "Rock 1 Anim"
+        "label": "Rock 1 Anim",
+        "animated": true
       },
       {
         "path": "sprites/decor/Rock_2_Anim.png",
         "tileW": 16,
         "tileH": 16,
-        "label": "Rock 2 Anim"
+        "label": "Rock 2 Anim",
+        "animated": true
       },
       {
         "path": "sprites/decor/Scarecrows.png",
@@ -1954,13 +2063,15 @@ export const SPRITE_CATEGORIES = [
         "path": "sprites/decor/muschroom_1_Anim.png",
         "tileW": 16,
         "tileH": 16,
-        "label": "muschroom 1 Anim"
+        "label": "muschroom 1 Anim",
+        "animated": true
       },
       {
         "path": "sprites/decor/muschroom_2_Anim.png",
         "tileW": 16,
         "tileH": 16,
-        "label": "muschroom 2 Anim"
+        "label": "muschroom 2 Anim",
+        "animated": true
       }
     ]
   },
@@ -2125,7 +2236,8 @@ export const SPRITE_CATEGORIES = [
         "path": "sprites/animals/Bee_Flying_Animation.png",
         "tileW": 16,
         "tileH": 16,
-        "label": "Bee Flying Animation"
+        "label": "Bee Flying Animation",
+        "animated": true
       },
       {
         "path": "sprites/animals/Bee_Hive.png",
@@ -3157,7 +3269,8 @@ export const SPRITE_CATEGORIES = [
         "path": "sprites/weather/Wind_Anim.png",
         "tileW": 16,
         "tileH": 16,
-        "label": "Wind Anim"
+        "label": "Wind Anim",
+        "animated": true
       }
     ]
   }

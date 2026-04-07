@@ -141,8 +141,8 @@ router.put('/:id/cells', authenticateToken, (req, res) => {
   }
 
   const upsert = db.prepare(`
-    INSERT INTO tile_map_cells (layer_id, grid_x, grid_y, sheet, sprite_x, sprite_y, sprite_w, sprite_h, walkable, interactable, portal_target)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    INSERT INTO tile_map_cells (layer_id, grid_x, grid_y, sheet, sprite_x, sprite_y, sprite_w, sprite_h, walkable, interactable, portal_target, anim_frames, anim_speed)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     ON CONFLICT(layer_id, grid_x, grid_y) DO UPDATE SET
       sheet = excluded.sheet,
       sprite_x = excluded.sprite_x,
@@ -151,7 +151,9 @@ router.put('/:id/cells', authenticateToken, (req, res) => {
       sprite_h = excluded.sprite_h,
       walkable = excluded.walkable,
       interactable = excluded.interactable,
-      portal_target = excluded.portal_target
+      portal_target = excluded.portal_target,
+      anim_frames = excluded.anim_frames,
+      anim_speed = excluded.anim_speed
   `);
 
   const errors = [];
@@ -183,7 +185,9 @@ router.put('/:id/cells', authenticateToken, (req, res) => {
         parseInt(c.sprite_h) || 16,
         c.walkable != null ? (c.walkable ? 1 : 0) : 1,
         c.interactable ? 1 : 0,
-        c.portal_target || null
+        c.portal_target || null,
+        parseInt(c.anim_frames) || 1,
+        parseFloat(c.anim_speed) || 150
       );
     }
   });

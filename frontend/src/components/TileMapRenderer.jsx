@@ -121,6 +121,7 @@ export default function TileMapRenderer({ mapData, onPortal }) {
       // Render tile layers
       const layerContainers = [];
       const sortedLayers = [...(mapData.layers || [])].sort((a, b) => a.layer_index - b.layer_index);
+      const animatedTiles = []; // { sprite, cell, timer, currentFrame }
 
       for (const layer of sortedLayers) {
         const c = new Container();
@@ -141,6 +142,22 @@ export default function TileMapRenderer({ mapData, onPortal }) {
           sprite.width = TILE;
           sprite.height = TILE;
           c.addChild(sprite);
+
+          const animFrames = cell.anim_frames || 1;
+          if (animFrames > 1) {
+            animatedTiles.push({
+              sprite,
+              sheet: cell.sheet,
+              baseX: cell.sprite_x,
+              baseY: cell.sprite_y,
+              frameW: cell.sprite_w,
+              frameH: cell.sprite_h,
+              frames: animFrames,
+              speed: cell.anim_speed || 150,
+              timer: 0,
+              currentFrame: 0,
+            });
+          }
         }
       }
 
@@ -250,6 +267,23 @@ export default function TileMapRenderer({ mapData, onPortal }) {
         if (player.animTimer > 0.12) {
           player.animTimer = 0;
           player.animFrame = (player.animFrame + 1) % 6;
+        }
+
+        // Animate tiles
+        const dtMs = dt * 1000;
+        for (const at of animatedTiles) {
+          at.timer += dtMs;
+          if (at.timer >= at.speed) {
+            at.timer -= at.speed;
+            at.currentFrame = (at.currentFrame + 1) % at.frames;
+            const frameX = at.baseX + at.currentFrame * at.frameW;
+            const base = Assets.get('/' + at.sheet);
+            if (base) {
+              try {
+                at.sprite.texture = new Texture({ source: base.source, frame: new Rectangle(frameX, at.baseY, at.frameW, at.frameH) });
+              } catch { /* skip bad frame */ }
+            }
+          }
         }
 
         // Camera

@@ -442,6 +442,16 @@ a:hover { text-decoration: underline; }
   border-radius: 3px;
 }
 
+.editor-toggle.anim-input input[type="number"] {
+  width: 52px;
+  padding: 2px 4px;
+  font-size: .7rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-radius: 3px;
+}
+
 /* Body: palette + canvas */
 .editor-body {
   display: flex;
@@ -584,6 +594,30 @@ a:hover { text-decoration: underline; }
   color: var(--text-muted);
   border-top: 1px solid rgba(255,255,255,.08);
   font-family: monospace;
+}
+
+.palette-anim-preview {
+  padding: 8px;
+  border-top: 1px solid rgba(255,255,255,.08);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.palette-anim-preview canvas {
+  border: 1px solid rgba(255,255,255,.15);
+  border-radius: 3px;
+  background: #1a1a2e;
+}
+
+.palette-anim-label {
+  font-size: .6rem;
+  color: var(--text-muted);
+}
+
+.palette-sheet-option.animated {
+  color: #e8c170;
 }
 
 /* Editor Canvas */

@@ -34,12 +34,15 @@ for (const [folder, config] of Object.entries(CATEGORY_CONFIG)) {
 
   const sheets = files.map(f => {
     const label = f.replace('.png', '').replace(/_/g, ' ');
-    return {
+    const animated = /(_Anim|_Animation|_animation|_anim)\.png$/i.test(f);
+    const entry = {
       path: `sprites/${folder}/${f}`,
       tileW: config.tileW,
       tileH: config.tileH,
       label,
     };
+    if (animated) entry.animated = true;
+    return entry;
   });
 
   categories.push({ name: config.name, sheets });

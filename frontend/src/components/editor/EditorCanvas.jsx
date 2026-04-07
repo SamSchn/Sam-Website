@@ -60,6 +60,7 @@ const EditorCanvas = forwardRef(function EditorCanvas(props, ref) {
       checker: null,     // Graphics for checkerboard background
       cells: new Map(),  // "layer,x,y" → { sprite, data }
       dirty: new Set(),  // "layer,x,y" keys that changed since last save
+      animated: new Map(), // "layer,x,y" → { timer, currentFrame } — animated cells
       mapW: 30,
       mapH: 30,
       painting: false,   // false | 'paint' | 'erase'
@@ -88,6 +89,23 @@ const EditorCanvas = forwardRef(function EditorCanvas(props, ref) {
       const key = '/' + sheetPath;
       if (Assets.get(key)) return;
       await Assets.load(key).catch(() => null);
+    }
+
+    // Animate all cells that have anim_frames > 1
+    function tickAnimations(dtMs) {
+      for (const [key, anim] of S.animated) {
+        const entry = S.cells.get(key);
+        if (!entry) { S.animated.delete(key); continue; }
+        const d = entry.data;
+        anim.timer += dtMs;
+        if (anim.timer >= d.anim_speed) {
+          anim.timer -= d.anim_speed;
+          anim.currentFrame = (anim.currentFrame + 1) % d.anim_frames;
+          const frameX = d.sprite_x + anim.currentFrame * d.sprite_w;
+          const tex = getSubTexture(d.sheet, frameX, d.sprite_y, d.sprite_w, d.sprite_h);
+          if (tex) entry.sprite.texture = tex;
+        }
+      }
     }
 
     function drawChecker() {
@@ -169,6 +187,8 @@ const EditorCanvas = forwardRef(function EditorCanvas(props, ref) {
         walkable: p.tileProps?.walkable ? 1 : 0,
         interactable: p.tileProps?.interactable ? 1 : 0,
         portal_target: p.tileProps?.portal_target || null,
+        anim_frames: p.tileProps?.anim_frames || 1,
+        anim_speed: p.tileProps?.anim_speed || 150,
       };
 
       if (existing) {
@@ -180,6 +200,13 @@ const EditorCanvas = forwardRef(function EditorCanvas(props, ref) {
         sprite.y = gy * TILE_SIZE;
         S.layers[layerIdx]?.addChild(sprite);
         S.cells.set(key, { sprite, data: cellData });
+      }
+
+      // Register/unregister animation
+      if (cellData.anim_frames > 1) {
+        S.animated.set(key, { timer: 0, currentFrame: 0 });
+      } else {
+        S.animated.delete(key);
       }
 
       S.dirty.add(key);
@@ -199,6 +226,7 @@ const EditorCanvas = forwardRef(function EditorCanvas(props, ref) {
       if (existing) {
         existing.sprite.destroy();
         S.cells.delete(key);
+        S.animated.delete(key);
         S.dirty.add(key);
         p.onDirty?.(true);
       }
@@ -239,6 +267,7 @@ const EditorCanvas = forwardRef(function EditorCanvas(props, ref) {
       }
       S.cells.clear();
       S.dirty.clear();
+      S.animated.clear();
 
       S.layers.forEach(c => c.removeChildren());
 
@@ -256,6 +285,9 @@ const EditorCanvas = forwardRef(function EditorCanvas(props, ref) {
             const li = layer.layer_index;
             S.layers[li]?.addChild(sprite);
 
+            const animFrames = cell.anim_frames || 1;
+            const animSpeed = cell.anim_speed || 150;
+
             const key = `${li},${cell.grid_x},${cell.grid_y}`;
             S.cells.set(key, {
               sprite,
@@ -271,8 +303,14 @@ const EditorCanvas = forwardRef(function EditorCanvas(props, ref) {
                 walkable: cell.walkable,
                 interactable: cell.interactable,
                 portal_target: cell.portal_target,
+                anim_frames: animFrames,
+                anim_speed: animSpeed,
               },
             });
+
+            if (animFrames > 1) {
+              S.animated.set(key, { timer: 0, currentFrame: 0 });
+            }
           }
         }
       }
@@ -426,6 +464,15 @@ const EditorCanvas = forwardRef(function EditorCanvas(props, ref) {
       if (propsRef.current.mapData) {
         loadMap(propsRef.current.mapData);
       }
+
+      // Animation ticker
+      let lastAnimTime = performance.now();
+      const animTick = () => {
+        const now = performance.now();
+        tickAnimations(now - lastAnimTime);
+        lastAnimTime = now;
+      };
+      app.ticker.add(animTick);
     }
 
     init();
@@ -454,6 +501,7 @@ const EditorCanvas = forwardRef(function EditorCanvas(props, ref) {
     for (const val of S.cells.values()) val.sprite.destroy();
     S.cells.clear();
     S.dirty.clear();
+    S.animated.clear();
     S.layers.forEach(c => c.removeChildren());
 
     if (props.mapData.layers) {
@@ -473,6 +521,9 @@ const EditorCanvas = forwardRef(function EditorCanvas(props, ref) {
           const li = layer.layer_index;
           S.layers[li]?.addChild(sprite);
 
+          const animFrames = cell.anim_frames || 1;
+          const animSpeed = cell.anim_speed || 150;
+
           const key = `${li},${cell.grid_x},${cell.grid_y}`;
           S.cells.set(key, {
             sprite,
@@ -488,8 +539,14 @@ const EditorCanvas = forwardRef(function EditorCanvas(props, ref) {
               walkable: cell.walkable,
               interactable: cell.interactable,
               portal_target: cell.portal_target,
+              anim_frames: animFrames,
+              anim_speed: animSpeed,
             },
           });
+
+          if (animFrames > 1) {
+            S.animated.set(key, { timer: 0, currentFrame: 0 });
+          }
         }
       }
     }

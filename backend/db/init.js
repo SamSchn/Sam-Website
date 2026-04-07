@@ -105,10 +105,21 @@ function createTables() {
       walkable INTEGER NOT NULL DEFAULT 1,
       interactable INTEGER NOT NULL DEFAULT 0,
       portal_target TEXT,
+      anim_frames INTEGER NOT NULL DEFAULT 1,
+      anim_speed REAL NOT NULL DEFAULT 150,
       UNIQUE(layer_id, grid_x, grid_y),
       FOREIGN KEY (layer_id) REFERENCES tile_map_layers(id) ON DELETE CASCADE
     );
   `);
+
+  // Migrations for existing databases
+  const cols = db.prepare("PRAGMA table_info(tile_map_cells)").all().map(c => c.name);
+  if (!cols.includes('anim_frames')) {
+    db.exec(`
+      ALTER TABLE tile_map_cells ADD COLUMN anim_frames INTEGER NOT NULL DEFAULT 1;
+      ALTER TABLE tile_map_cells ADD COLUMN anim_speed REAL NOT NULL DEFAULT 150;
+    `);
+  }
 }
 
 module.exports = { getDb };
