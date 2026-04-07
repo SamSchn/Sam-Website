@@ -75,6 +75,7 @@ function SheetGrid({ sheet, selectedTile, onSelectTile }) {
 export default function SpritePalette({ selectedTile, onSelectTile }) {
   const [activeCategory, setActiveCategory] = useState(0);
   const [activeSheet, setActiveSheet] = useState(0);
+  const [sheetDropOpen, setSheetDropOpen] = useState(false);
 
   const category = SPRITE_CATEGORIES[activeCategory];
   const sheet = category?.sheets[activeSheet];
@@ -82,6 +83,12 @@ export default function SpritePalette({ selectedTile, onSelectTile }) {
   function switchCategory(i) {
     setActiveCategory(i);
     setActiveSheet(0);
+    setSheetDropOpen(false);
+  }
+
+  function pickSheet(i) {
+    setActiveSheet(i);
+    setSheetDropOpen(false);
   }
 
   return (
@@ -99,15 +106,26 @@ export default function SpritePalette({ selectedTile, onSelectTile }) {
       </div>
 
       <div className="palette-sheets">
-        {category.sheets.map((s, i) => (
-          <button
-            key={s.path}
-            className={`palette-sheet-btn${i === activeSheet ? ' active' : ''}`}
-            onClick={() => setActiveSheet(i)}
-          >
-            {s.label}
-          </button>
-        ))}
+        <button
+          className="palette-sheet-toggle"
+          onClick={() => setSheetDropOpen(o => !o)}
+        >
+          <span className="palette-sheet-toggle-label">{sheet?.label ?? '—'}</span>
+          <span className="palette-sheet-toggle-arrow">{sheetDropOpen ? '▲' : '▼'}</span>
+        </button>
+        {sheetDropOpen && (
+          <div className="palette-sheet-dropdown">
+            {category.sheets.map((s, i) => (
+              <button
+                key={s.path}
+                className={`palette-sheet-option${i === activeSheet ? ' active' : ''}`}
+                onClick={() => pickSheet(i)}
+              >
+                {s.label}
+              </button>
+            ))}
+          </div>
+        )}
       </div>
 
       {sheet && (
