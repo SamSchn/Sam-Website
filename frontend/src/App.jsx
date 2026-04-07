@@ -5,12 +5,13 @@ import Login from './pages/Login';
 import Posts from './pages/Posts';
 import Board from './pages/Board';
 import Garden from './pages/Garden';
+import TileEditor from './pages/TileEditor';
 import { useAuth } from './context/AuthContext';
 
 function BackToJungle() {
   const { user, logout } = useAuth();
   const location = useLocation();
-  if (location.pathname === '/' || location.pathname === '/garden') return null;
+  if (location.pathname === '/' || location.pathname === '/garden' || location.pathname === '/editor') return null;
 
   return (
     <div className="back-bar">
@@ -42,6 +43,7 @@ export default function App() {
           <Route path="/posts" element={<Posts />} />
           <Route path="/board" element={<Board />} />
           <Route path="/garden" element={<Garden />} />
+          <Route path="/editor" element={<TileEditor />} />
         </Routes>
       </main>
     </div>
