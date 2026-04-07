@@ -72,6 +72,42 @@ function createTables() {
     );
 
     INSERT OR IGNORE INTO garden_settings (id, grid_width, grid_height) VALUES (1, 15, 15);
+
+    -- Tile Map Editor tables
+    CREATE TABLE IF NOT EXISTS tile_maps (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT NOT NULL UNIQUE,
+      width INTEGER NOT NULL DEFAULT 30,
+      height INTEGER NOT NULL DEFAULT 30,
+      created_at TEXT DEFAULT (datetime('now')),
+      updated_at TEXT DEFAULT (datetime('now'))
+    );
+
+    CREATE TABLE IF NOT EXISTS tile_map_layers (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      map_id INTEGER NOT NULL,
+      layer_index INTEGER NOT NULL DEFAULT 0,
+      name TEXT NOT NULL DEFAULT 'ground',
+      UNIQUE(map_id, layer_index),
+      FOREIGN KEY (map_id) REFERENCES tile_maps(id) ON DELETE CASCADE
+    );
+
+    CREATE TABLE IF NOT EXISTS tile_map_cells (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      layer_id INTEGER NOT NULL,
+      grid_x INTEGER NOT NULL,
+      grid_y INTEGER NOT NULL,
+      sheet TEXT NOT NULL,
+      sprite_x INTEGER NOT NULL DEFAULT 0,
+      sprite_y INTEGER NOT NULL DEFAULT 0,
+      sprite_w INTEGER NOT NULL DEFAULT 16,
+      sprite_h INTEGER NOT NULL DEFAULT 16,
+      walkable INTEGER NOT NULL DEFAULT 1,
+      interactable INTEGER NOT NULL DEFAULT 0,
+      portal_target TEXT,
+      UNIQUE(layer_id, grid_x, grid_y),
+      FOREIGN KEY (layer_id) REFERENCES tile_map_layers(id) ON DELETE CASCADE
+    );
   `);
 }
 

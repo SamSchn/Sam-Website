@@ -54,4 +54,18 @@ export const api = {
     request(`/garden/${id}`, { method: 'DELETE' }),
   updateGardenSettings: (grid_width, grid_height) =>
     request('/garden/settings', { method: 'PUT', body: JSON.stringify({ grid_width, grid_height }) }),
+
+  // Tile Maps
+  getTileMaps: () => request('/tilemap'),
+  getTileMap: (id) => request(`/tilemap/${id}`),
+  createTileMap: (name, width, height) =>
+    request('/tilemap', { method: 'POST', body: JSON.stringify({ name, width, height }) }),
+  updateTileMap: (id, data) =>
+    request(`/tilemap/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+  deleteTileMap: (id) =>
+    request(`/tilemap/${id}`, { method: 'DELETE' }),
+  saveTileMapCells: (id, cells) =>
+    request(`/tilemap/${id}/cells`, { method: 'PUT', body: JSON.stringify({ cells }) }),
+  deleteTileMapCells: (id, cells) =>
+    request(`/tilemap/${id}/cells`, { method: 'DELETE', body: JSON.stringify({ cells }) }),
 };

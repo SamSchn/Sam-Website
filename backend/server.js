@@ -6,6 +6,7 @@ const authRoutes = require('./routes/auth');
 const postRoutes = require('./routes/posts');
 const noteRoutes = require('./routes/notes');
 const gardenRoutes = require('./routes/garden');
+const tilemapRoutes = require('./routes/tilemap');
 
 const app = express();
 const PORT = process.env.PORT || 3002;
@@ -19,6 +20,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/posts', postRoutes);
 app.use('/api/notes', noteRoutes);
 app.use('/api/garden', gardenRoutes);
+app.use('/api/tilemap', tilemapRoutes);
 
 // Serve frontend in production
 const frontendDist = path.join(__dirname, '..', 'frontend', 'dist');
