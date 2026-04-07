@@ -653,3 +653,74 @@ a:hover { text-decoration: underline; }
   background: var(--danger);
   color: #fff;
 }
+
+/* ===== Village (Runtime Tile Map) ===== */
+
+.village-game {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  background: #2a4a18;
+  z-index: 50;
+}
+
+.village-hud {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.village-hud-top-left {
+  position: absolute;
+  top: 12px; left: 16px;
+  pointer-events: auto;
+}
+
+.village-title {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--primary);
+  text-shadow: 0 2px 6px rgba(0,0,0,.5);
+}
+
+.village-hud-top-right {
+  position: absolute;
+  top: 12px; right: 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  pointer-events: auto;
+}
+
+.village-user {
+  font-size: .8rem;
+  color: var(--text-muted);
+  text-shadow: 0 1px 4px rgba(0,0,0,.5);
+}
+
+.village-hud-bottom {
+  position: absolute;
+  bottom: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: .75rem;
+  color: rgba(255,255,255,.5);
+  text-shadow: 0 1px 4px rgba(0,0,0,.7);
+  font-family: monospace;
+}
+
+.village-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  gap: 1rem;
+  color: var(--text-muted);
+  text-align: center;
+  padding: 2rem;
+}
+.village-empty h2 {
+  color: var(--primary);
+}
