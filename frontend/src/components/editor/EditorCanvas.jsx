@@ -1,6 +1,5 @@
 import { useEffect, useRef, useImperativeHandle, forwardRef } from 'react';
 import { Application, Container, Graphics, Sprite, Texture, Rectangle, Assets, TextureStyle } from 'pixi.js';
-import { SPRITE_CATEGORIES } from './spriteManifest';
 
 const TILE_SIZE = 16;
 const INITIAL_ZOOM = 3;
@@ -84,6 +83,13 @@ const EditorCanvas = forwardRef(function EditorCanvas(props, ref) {
       }
     }
 
+    // Load a sheet on demand if not already cached
+    async function ensureSheet(sheetPath) {
+      const key = '/' + sheetPath;
+      if (Assets.get(key)) return;
+      await Assets.load(key).catch(() => null);
+    }
+
     function drawChecker() {
       if (!S.checker) return;
       S.checker.clear();
@@ -138,8 +144,15 @@ const EditorCanvas = forwardRef(function EditorCanvas(props, ref) {
       if (S.lastPainted === `${layerIdx},${posKey}`) return;
       S.lastPainted = `${layerIdx},${posKey}`;
 
-      const texture = getSubTexture(tile.sheet, tile.sprite_x, tile.sprite_y, tile.sprite_w, tile.sprite_h);
-      if (!texture) return;
+      let texture = getSubTexture(tile.sheet, tile.sprite_x, tile.sprite_y, tile.sprite_w, tile.sprite_h);
+      if (!texture) {
+        // Sheet not loaded yet — load it then paint
+        ensureSheet(tile.sheet).then(() => {
+          S.lastPainted = null; // allow re-paint
+          paintTile(gx, gy);
+        });
+        return;
+      }
 
       const key = `${layerIdx},${gx},${gy}`;
       const existing = S.cells.get(key);
@@ -321,9 +334,16 @@ const EditorCanvas = forwardRef(function EditorCanvas(props, ref) {
     async function init() {
       TextureStyle.defaultOptions.scaleMode = 'nearest';
 
-      // Preload all sprite sheets
-      const allPaths = SPRITE_CATEGORIES.flatMap(cat => cat.sheets.map(s => '/' + s.path));
-      await Promise.all(allPaths.map(p => Assets.load(p).catch(() => null)));
+      // Only preload sheets used by the current map (not all 500+)
+      if (propsRef.current.mapData?.layers) {
+        const sheets = new Set();
+        for (const layer of propsRef.current.mapData.layers) {
+          for (const cell of (layer.cells || [])) {
+            sheets.add('/' + cell.sheet);
+          }
+        }
+        await Promise.all([...sheets].map(p => Assets.load(p).catch(() => null)));
+      }
 
       if (destroyed) return;
 

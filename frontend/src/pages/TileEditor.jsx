@@ -210,6 +210,15 @@ export default function TileEditor() {
             />
             Interact
           </label>
+          <label className="editor-toggle portal-input">
+            Portal
+            <input
+              type="text"
+              placeholder="target"
+              value={tileProps.portal_target}
+              onChange={e => setTileProps(p => ({ ...p, portal_target: e.target.value }))}
+            />
+          </label>
         </div>
       </div>
 

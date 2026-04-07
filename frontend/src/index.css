@@ -428,8 +428,18 @@ a:hover { text-decoration: underline; }
   user-select: none;
 }
 
-.editor-toggle input {
+.editor-toggle input[type="checkbox"] {
   accent-color: var(--primary);
+}
+
+.editor-toggle.portal-input input[type="text"] {
+  width: 80px;
+  padding: 2px 4px;
+  font-size: .7rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-radius: 3px;
 }
 
 /* Body: palette + canvas */
