@@ -121,7 +121,8 @@ export default function TileMapRenderer({ mapData, onPortal }) {
       // Render tile layers
       const layerContainers = [];
       const sortedLayers = [...(mapData.layers || [])].sort((a, b) => a.layer_index - b.layer_index);
-      const animatedTiles = []; // { sprite, cell, timer, currentFrame }
+      const animatedTiles = []; // { sprite, sheet, baseX, baseY, frameW, frameH, frames, speed, step, currentFrame }
+      let globalAnimTime = 0;
 
       for (const layer of sortedLayers) {
         const c = new Container();
@@ -154,7 +155,7 @@ export default function TileMapRenderer({ mapData, onPortal }) {
               frameH: cell.sprite_h,
               frames: animFrames,
               speed: cell.anim_speed || 150,
-              timer: 0,
+              step: cell.anim_step || 1,
               currentFrame: 0,
             });
           }
@@ -269,14 +270,14 @@ export default function TileMapRenderer({ mapData, onPortal }) {
           player.animFrame = (player.animFrame + 1) % 6;
         }
 
-        // Animate tiles
+        // Animate tiles (global clock)
         const dtMs = dt * 1000;
+        globalAnimTime += dtMs;
         for (const at of animatedTiles) {
-          at.timer += dtMs;
-          if (at.timer >= at.speed) {
-            at.timer -= at.speed;
-            at.currentFrame = (at.currentFrame + 1) % at.frames;
-            const frameX = at.baseX + at.currentFrame * at.frameW;
+          const frame = Math.floor(globalAnimTime / at.speed) % at.frames;
+          if (frame !== at.currentFrame) {
+            at.currentFrame = frame;
+            const frameX = at.baseX + frame * at.step * at.frameW;
             const base = Assets.get('/' + at.sheet);
             if (base) {
               try {

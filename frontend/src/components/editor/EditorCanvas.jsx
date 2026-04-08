@@ -91,17 +91,20 @@ const EditorCanvas = forwardRef(function EditorCanvas(props, ref) {
       await Assets.load(key).catch(() => null);
     }
 
-    // Animate all cells that have anim_frames > 1
+    // Global animation clock — all tiles derive frame from this
+    let globalAnimTime = 0;
+
     function tickAnimations(dtMs) {
+      globalAnimTime += dtMs;
       for (const [key, anim] of S.animated) {
         const entry = S.cells.get(key);
         if (!entry) { S.animated.delete(key); continue; }
         const d = entry.data;
-        anim.timer += dtMs;
-        if (anim.timer >= d.anim_speed) {
-          anim.timer -= d.anim_speed;
-          anim.currentFrame = (anim.currentFrame + 1) % d.anim_frames;
-          const frameX = d.sprite_x + anim.currentFrame * d.sprite_w;
+        const frame = Math.floor(globalAnimTime / d.anim_speed) % d.anim_frames;
+        if (frame !== anim.currentFrame) {
+          anim.currentFrame = frame;
+          const step = (d.anim_step || 1) * d.sprite_w;
+          const frameX = d.sprite_x + frame * step;
           const tex = getSubTexture(d.sheet, frameX, d.sprite_y, d.sprite_w, d.sprite_h);
           if (tex) entry.sprite.texture = tex;
         }
@@ -189,6 +192,7 @@ const EditorCanvas = forwardRef(function EditorCanvas(props, ref) {
         portal_target: p.tileProps?.portal_target || null,
         anim_frames: p.tileProps?.anim_frames || 1,
         anim_speed: p.tileProps?.anim_speed || 150,
+        anim_step: p.tileProps?.anim_step || 1,
       };
 
       if (existing) {
@@ -204,7 +208,7 @@ const EditorCanvas = forwardRef(function EditorCanvas(props, ref) {
 
       // Register/unregister animation
       if (cellData.anim_frames > 1) {
-        S.animated.set(key, { timer: 0, currentFrame: 0 });
+        S.animated.set(key, { currentFrame: 0 });
       } else {
         S.animated.delete(key);
       }
@@ -287,6 +291,7 @@ const EditorCanvas = forwardRef(function EditorCanvas(props, ref) {
 
             const animFrames = cell.anim_frames || 1;
             const animSpeed = cell.anim_speed || 150;
+            const animStep = cell.anim_step || 1;
 
             const key = `${li},${cell.grid_x},${cell.grid_y}`;
             S.cells.set(key, {
@@ -305,11 +310,12 @@ const EditorCanvas = forwardRef(function EditorCanvas(props, ref) {
                 portal_target: cell.portal_target,
                 anim_frames: animFrames,
                 anim_speed: animSpeed,
+                anim_step: animStep,
               },
             });
 
             if (animFrames > 1) {
-              S.animated.set(key, { timer: 0, currentFrame: 0 });
+              S.animated.set(key, { currentFrame: 0 });
             }
           }
         }
@@ -523,6 +529,7 @@ const EditorCanvas = forwardRef(function EditorCanvas(props, ref) {
 
           const animFrames = cell.anim_frames || 1;
           const animSpeed = cell.anim_speed || 150;
+          const animStep = cell.anim_step || 1;
 
           const key = `${li},${cell.grid_x},${cell.grid_y}`;
           S.cells.set(key, {
@@ -541,11 +548,12 @@ const EditorCanvas = forwardRef(function EditorCanvas(props, ref) {
               portal_target: cell.portal_target,
               anim_frames: animFrames,
               anim_speed: animSpeed,
+              anim_step: animStep,
             },
           });
 
           if (animFrames > 1) {
-            S.animated.set(key, { timer: 0, currentFrame: 0 });
+            S.animated.set(key, { currentFrame: 0 });
           }
         }
       }

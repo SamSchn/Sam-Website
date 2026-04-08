@@ -77,7 +77,7 @@ function SheetGrid({ sheet, selectedTile, onSelectTile, onTileProps }) {
   );
 }
 
-function AnimPreview({ tile, animFrames, animSpeed }) {
+function AnimPreview({ tile, animFrames, animSpeed, animStep }) {
   const canvasRef = useRef(null);
 
   useEffect(() => {
@@ -89,6 +89,7 @@ function AnimPreview({ tile, animFrames, animSpeed }) {
     const img = new Image();
     let frame = 0;
     let timer;
+    const step = animStep || 1;
 
     img.onload = () => {
       const scale = 3;
@@ -98,7 +99,7 @@ function AnimPreview({ tile, animFrames, animSpeed }) {
 
       function draw() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        const sx = tile.sprite_x + frame * tile.sprite_w;
+        const sx = tile.sprite_x + frame * step * tile.sprite_w;
         ctx.drawImage(img, sx, tile.sprite_y, tile.sprite_w, tile.sprite_h, 0, 0, canvas.width, canvas.height);
         frame = (frame + 1) % animFrames;
       }
@@ -109,7 +110,7 @@ function AnimPreview({ tile, animFrames, animSpeed }) {
     img.src = '/' + tile.sheet;
 
     return () => clearInterval(timer);
-  }, [tile, animFrames, animSpeed]);
+  }, [tile, animFrames, animSpeed, animStep]);
 
   if (!tile || animFrames <= 1) return null;
   return (
@@ -190,6 +191,7 @@ export default function SpritePalette({ selectedTile, onSelectTile, tileProps, o
         tile={selectedTile}
         animFrames={tileProps?.anim_frames || 1}
         animSpeed={tileProps?.anim_speed || 150}
+        animStep={tileProps?.anim_step || 1}
       />
     </div>
   );

@@ -107,6 +107,7 @@ function createTables() {
       portal_target TEXT,
       anim_frames INTEGER NOT NULL DEFAULT 1,
       anim_speed REAL NOT NULL DEFAULT 150,
+      anim_step INTEGER NOT NULL DEFAULT 1,
       UNIQUE(layer_id, grid_x, grid_y),
       FOREIGN KEY (layer_id) REFERENCES tile_map_layers(id) ON DELETE CASCADE
     );
@@ -118,7 +119,11 @@ function createTables() {
     db.exec(`
       ALTER TABLE tile_map_cells ADD COLUMN anim_frames INTEGER NOT NULL DEFAULT 1;
       ALTER TABLE tile_map_cells ADD COLUMN anim_speed REAL NOT NULL DEFAULT 150;
+      ALTER TABLE tile_map_cells ADD COLUMN anim_step INTEGER NOT NULL DEFAULT 1;
     `);
+  }
+  if (cols.includes('anim_frames') && !cols.includes('anim_step')) {
+    db.exec(`ALTER TABLE tile_map_cells ADD COLUMN anim_step INTEGER NOT NULL DEFAULT 1;`);
   }
 }
 
