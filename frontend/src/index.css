@@ -461,7 +461,7 @@ a:hover { text-decoration: underline; }
 
 /* Sprite Palette */
 .sprite-palette {
-  width: 280px;
+  width: 320px;
   display: flex;
   flex-direction: column;
   background: rgba(0, 0, 0, .25);
@@ -560,7 +560,7 @@ a:hover { text-decoration: underline; }
 .palette-grid-wrapper {
   flex: 1;
   overflow-y: auto;
-  overflow-x: hidden;
+  overflow-x: auto;
   padding: 8px;
 }
 
