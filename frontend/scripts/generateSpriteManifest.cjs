@@ -1,8 +1,9 @@
-// Auto-generate spriteManifest.js from frontend/public/sprites/
+// Auto-generate spriteManifest.js from frontend/public/sprites/ and frontend/public/animations/
 const fs = require('fs');
 const path = require('path');
 
 const SPRITES_DIR = path.join(__dirname, '..', 'public', 'sprites');
+const ANIMS_DIR = path.join(__dirname, '..', 'public', 'animations');
 
 const CATEGORY_CONFIG = {
   tiles:     { name: 'Tiles',     tileW: 16, tileH: 16 },
@@ -23,29 +24,44 @@ const CATEGORY_CONFIG = {
 const categories = [];
 
 for (const [folder, config] of Object.entries(CATEGORY_CONFIG)) {
-  const dir = path.join(SPRITES_DIR, folder);
-  if (!fs.existsSync(dir)) continue;
+  const sheets = [];
 
-  const files = fs.readdirSync(dir)
-    .filter(f => f.endsWith('.png'))
-    .sort();
+  // Static sprites from sprites/{folder}/
+  const spriteDir = path.join(SPRITES_DIR, folder);
+  if (fs.existsSync(spriteDir)) {
+    const files = fs.readdirSync(spriteDir)
+      .filter(f => f.endsWith('.png'))
+      .sort();
+    for (const f of files) {
+      sheets.push({
+        path: `sprites/${folder}/${f}`,
+        tileW: config.tileW,
+        tileH: config.tileH,
+        label: f.replace('.png', '').replace(/_/g, ' '),
+      });
+    }
+  }
 
-  if (files.length === 0) continue;
+  // Animated sprites from animations/{folder}/
+  const animDir = path.join(ANIMS_DIR, folder);
+  if (fs.existsSync(animDir)) {
+    const files = fs.readdirSync(animDir)
+      .filter(f => f.endsWith('.png'))
+      .sort();
+    for (const f of files) {
+      sheets.push({
+        path: `animations/${folder}/${f}`,
+        tileW: config.tileW,
+        tileH: config.tileH,
+        label: f.replace('.png', '').replace(/_/g, ' '),
+        animated: true,
+      });
+    }
+  }
 
-  const sheets = files.map(f => {
-    const label = f.replace('.png', '').replace(/_/g, ' ');
-    const animated = /(_Anim|_Animation|_animation|_anim)\.png$/i.test(f);
-    const entry = {
-      path: `sprites/${folder}/${f}`,
-      tileW: config.tileW,
-      tileH: config.tileH,
-      label,
-    };
-    if (animated) entry.animated = true;
-    return entry;
-  });
-
-  categories.push({ name: config.name, sheets });
+  if (sheets.length > 0) {
+    categories.push({ name: config.name, sheets });
+  }
 }
 
 // Write the manifest
@@ -55,5 +71,7 @@ export const SPRITE_CATEGORIES = ${JSON.stringify(categories, null, 2)};
 
 const outPath = path.join(__dirname, '..', 'src', 'components', 'editor', 'spriteManifest.js');
 fs.writeFileSync(outPath, output);
+const totalSheets = categories.reduce((s, c) => s + c.sheets.length, 0);
+const animSheets = categories.reduce((s, c) => s + c.sheets.filter(sh => sh.animated).length, 0);
 console.log(`Wrote ${outPath}`);
-console.log(`${categories.length} categories, ${categories.reduce((s, c) => s + c.sheets.length, 0)} sheets total`);
+console.log(`${categories.length} categories, ${totalSheets} sheets total (${totalSheets - animSheets} static, ${animSheets} animated)`);
