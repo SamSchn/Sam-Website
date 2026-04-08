@@ -18,7 +18,7 @@ export default function TileEditor() {
   const [selectedTile, setSelectedTile] = useState(null);
   const [activeLayer, setActiveLayer] = useState(0);
   const [tool, setTool] = useState('paint');
-  const [tileProps, setTileProps] = useState({ walkable: true, interactable: false, portal_target: '', anim_frames: 1, anim_speed: 150, anim_step: 1 });
+  const [tileProps, setTileProps] = useState({ walkable: true, interactable: false, portal_target: '', animate: false, anim_frames: 1, anim_speed: 150, anim_step: 1 });
   const [layerVisibility, setLayerVisibility] = useState([true, true, true]);
   const [showGrid, setShowGrid] = useState(true);
 
@@ -220,36 +220,48 @@ export default function TileEditor() {
             />
           </label>
           <label className="editor-toggle anim-input">
-            Frames
+            Animate
             <input
-              type="number"
-              min={1}
-              max={64}
-              value={tileProps.anim_frames}
-              onChange={e => setTileProps(p => ({ ...p, anim_frames: Math.max(1, parseInt(e.target.value) || 1) }))}
+              type="checkbox"
+              checked={tileProps.animate}
+              onChange={e => setTileProps(p => ({ ...p, animate: e.target.checked, anim_frames: e.target.checked ? p.anim_frames : 1 }))}
             />
           </label>
-          <label className="editor-toggle anim-input">
-            Speed(ms)
-            <input
-              type="number"
-              min={30}
-              max={2000}
-              step={10}
-              value={tileProps.anim_speed}
-              onChange={e => setTileProps(p => ({ ...p, anim_speed: Math.max(30, parseInt(e.target.value) || 150) }))}
-            />
-          </label>
-          <label className="editor-toggle anim-input">
-            Step
-            <input
-              type="number"
-              min={1}
-              max={64}
-              value={tileProps.anim_step}
-              onChange={e => setTileProps(p => ({ ...p, anim_step: Math.max(1, parseInt(e.target.value) || 1) }))}
-            />
-          </label>
+          {tileProps.animate && (
+            <>
+              <label className="editor-toggle anim-input">
+                Frames
+                <input
+                  type="number"
+                  min={1}
+                  max={64}
+                  value={tileProps.anim_frames}
+                  onChange={e => setTileProps(p => ({ ...p, anim_frames: Math.max(1, parseInt(e.target.value) || 1) }))}
+                />
+              </label>
+              <label className="editor-toggle anim-input">
+                Speed(ms)
+                <input
+                  type="number"
+                  min={30}
+                  max={2000}
+                  step={10}
+                  value={tileProps.anim_speed}
+                  onChange={e => setTileProps(p => ({ ...p, anim_speed: Math.max(30, parseInt(e.target.value) || 150) }))}
+                />
+              </label>
+              <label className="editor-toggle anim-input">
+                Step
+                <input
+                  type="number"
+                  min={1}
+                  max={64}
+                  value={tileProps.anim_step}
+                  onChange={e => setTileProps(p => ({ ...p, anim_step: Math.max(1, parseInt(e.target.value) || 1) }))}
+                />
+              </label>
+            </>
+          )}
         </div>
       </div>
 

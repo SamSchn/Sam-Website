@@ -161,79 +161,105 @@ const EditorCanvas = forwardRef(function EditorCanvas(props, ref) {
       const layerIdx = p.activeLayer ?? 0;
       if (!tile) return;
 
-      const posKey = `${gx},${gy}`;
+      const stampW = tile.stampW || 1;
+      const stampH = tile.stampH || 1;
+
+      const posKey = `stamp_${gx},${gy}`;
       if (S.lastPainted === `${layerIdx},${posKey}`) return;
       S.lastPainted = `${layerIdx},${posKey}`;
 
-      let texture = getSubTexture(tile.sheet, tile.sprite_x, tile.sprite_y, tile.sprite_w, tile.sprite_h);
-      if (!texture) {
-        // Sheet not loaded yet — load it then paint
-        ensureSheet(tile.sheet).then(() => {
-          S.lastPainted = null; // allow re-paint
-          paintTile(gx, gy);
-        });
-        return;
+      for (let dy = 0; dy < stampH; dy++) {
+        for (let dx = 0; dx < stampW; dx++) {
+          const cx = gx + dx;
+          const cy = gy + dy;
+          if (cx < 0 || cx >= S.mapW || cy < 0 || cy >= S.mapH) continue;
+
+          const subSpriteX = tile.sprite_x + dx * tile.sprite_w;
+          const subSpriteY = tile.sprite_y + dy * tile.sprite_h;
+
+          let texture = getSubTexture(tile.sheet, subSpriteX, subSpriteY, tile.sprite_w, tile.sprite_h);
+          if (!texture) {
+            ensureSheet(tile.sheet).then(() => {
+              S.lastPainted = null;
+              paintTile(gx, gy);
+            });
+            return;
+          }
+
+          const key = `${layerIdx},${cx},${cy}`;
+          const existing = S.cells.get(key);
+
+          const animFrames = p.tileProps?.animate ? (p.tileProps?.anim_frames || 1) : 1;
+          const cellData = {
+            layer_index: layerIdx,
+            grid_x: cx,
+            grid_y: cy,
+            sheet: tile.sheet,
+            sprite_x: subSpriteX,
+            sprite_y: subSpriteY,
+            sprite_w: tile.sprite_w,
+            sprite_h: tile.sprite_h,
+            walkable: p.tileProps?.walkable ? 1 : 0,
+            interactable: p.tileProps?.interactable ? 1 : 0,
+            portal_target: p.tileProps?.portal_target || null,
+            anim_frames: animFrames,
+            anim_speed: p.tileProps?.anim_speed || 150,
+            anim_step: p.tileProps?.anim_step || 1,
+          };
+
+          if (existing) {
+            existing.sprite.texture = texture;
+            existing.data = cellData;
+          } else {
+            const sprite = new Sprite(texture);
+            sprite.x = cx * TILE_SIZE;
+            sprite.y = cy * TILE_SIZE;
+            S.layers[layerIdx]?.addChild(sprite);
+            S.cells.set(key, { sprite, data: cellData });
+          }
+
+          if (cellData.anim_frames > 1) {
+            S.animated.set(key, { currentFrame: 0 });
+          } else {
+            S.animated.delete(key);
+          }
+
+          S.dirty.add(key);
+        }
       }
 
-      const key = `${layerIdx},${gx},${gy}`;
-      const existing = S.cells.get(key);
-
-      const cellData = {
-        layer_index: layerIdx,
-        grid_x: gx,
-        grid_y: gy,
-        sheet: tile.sheet,
-        sprite_x: tile.sprite_x,
-        sprite_y: tile.sprite_y,
-        sprite_w: tile.sprite_w,
-        sprite_h: tile.sprite_h,
-        walkable: p.tileProps?.walkable ? 1 : 0,
-        interactable: p.tileProps?.interactable ? 1 : 0,
-        portal_target: p.tileProps?.portal_target || null,
-        anim_frames: p.tileProps?.anim_frames || 1,
-        anim_speed: p.tileProps?.anim_speed || 150,
-        anim_step: p.tileProps?.anim_step || 1,
-      };
-
-      if (existing) {
-        existing.sprite.texture = texture;
-        existing.data = cellData;
-      } else {
-        const sprite = new Sprite(texture);
-        sprite.x = gx * TILE_SIZE;
-        sprite.y = gy * TILE_SIZE;
-        S.layers[layerIdx]?.addChild(sprite);
-        S.cells.set(key, { sprite, data: cellData });
-      }
-
-      // Register/unregister animation
-      if (cellData.anim_frames > 1) {
-        S.animated.set(key, { currentFrame: 0 });
-      } else {
-        S.animated.delete(key);
-      }
-
-      S.dirty.add(key);
       p.onDirty?.(true);
     }
 
     function eraseTile(gx, gy) {
       const p = propsRef.current;
       const layerIdx = p.activeLayer ?? 0;
+      const tile = p.selectedTile;
+      const stampW = tile?.stampW || 1;
+      const stampH = tile?.stampH || 1;
 
-      const posKey = `${gx},${gy}`;
+      const posKey = `erase_stamp_${gx},${gy}`;
       if (S.lastPainted === `erase_${layerIdx},${posKey}`) return;
       S.lastPainted = `erase_${layerIdx},${posKey}`;
 
-      const key = `${layerIdx},${gx},${gy}`;
-      const existing = S.cells.get(key);
-      if (existing) {
-        existing.sprite.destroy();
-        S.cells.delete(key);
-        S.animated.delete(key);
-        S.dirty.add(key);
-        p.onDirty?.(true);
+      for (let dy = 0; dy < stampH; dy++) {
+        for (let dx = 0; dx < stampW; dx++) {
+          const cx = gx + dx;
+          const cy = gy + dy;
+          if (cx < 0 || cx >= S.mapW || cy < 0 || cy >= S.mapH) continue;
+
+          const key = `${layerIdx},${cx},${cy}`;
+          const existing = S.cells.get(key);
+          if (existing) {
+            existing.sprite.destroy();
+            S.cells.delete(key);
+            S.animated.delete(key);
+            S.dirty.add(key);
+          }
+        }
       }
+
+      p.onDirty?.(true);
     }
 
     function updateCursor(sx, sy) {
@@ -244,11 +270,20 @@ const EditorCanvas = forwardRef(function EditorCanvas(props, ref) {
 
       const zoom = S.world?.scale.x || INITIAL_ZOOM;
       const tool = propsRef.current.tool || 'paint';
+      const tile = propsRef.current.selectedTile;
+      const stampW = tile?.stampW || 1;
+      const stampH = tile?.stampH || 1;
       const color = tool === 'erase' ? 0xd94f4f : 0xf0b840;
 
       S.cursor.setStrokeStyle({ width: 1.5 / zoom, color, alpha: 0.9 });
-      S.cursor.rect(pos.x * TILE_SIZE, pos.y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+      S.cursor.rect(pos.x * TILE_SIZE, pos.y * TILE_SIZE, TILE_SIZE * stampW, TILE_SIZE * stampH);
       S.cursor.stroke();
+
+      // Fill with semi-transparent overlay for multi-tile stamps
+      if (stampW > 1 || stampH > 1) {
+        S.cursor.rect(pos.x * TILE_SIZE, pos.y * TILE_SIZE, TILE_SIZE * stampW, TILE_SIZE * stampH);
+        S.cursor.fill({ color, alpha: 0.1 });
+      }
     }
 
     function centerView() {
