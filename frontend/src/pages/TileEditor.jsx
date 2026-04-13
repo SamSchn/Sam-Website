@@ -170,6 +170,37 @@ export default function TileEditor() {
             {isDirty ? 'Save *' : 'Saved'}
           </button>
           <button className="btn btn-sm btn-danger" onClick={deleteMap} disabled={!currentMapId}>Del</button>
+          {mapData && (
+            <span className="editor-size-group">
+              <input
+                type="number"
+                className="editor-size-input"
+                min={5}
+                max={500}
+                value={gridWidth}
+                onChange={e => {
+                  const v = Math.max(5, Math.min(500, parseInt(e.target.value) || 5));
+                  setGridWidth(v);
+                  canvasRef.current?.resize(v, gridHeight);
+                  setIsDirty(true);
+                }}
+              />
+              ×
+              <input
+                type="number"
+                className="editor-size-input"
+                min={5}
+                max={500}
+                value={gridHeight}
+                onChange={e => {
+                  const v = Math.max(5, Math.min(500, parseInt(e.target.value) || 5));
+                  setGridHeight(v);
+                  canvasRef.current?.resize(gridWidth, v);
+                  setIsDirty(true);
+                }}
+              />
+            </span>
+          )}
         </div>
 
         <div className="editor-toolbar-group">
@@ -311,34 +342,7 @@ export default function TileEditor() {
         ))}
         {mapData && (
           <span className="editor-map-info">
-            {mapData.name} —{' '}
-            <input
-              type="number"
-              className="editor-size-input"
-              min={5}
-              max={500}
-              value={gridWidth}
-              onChange={e => {
-                const v = Math.max(5, Math.min(500, parseInt(e.target.value) || 5));
-                setGridWidth(v);
-                canvasRef.current?.resize(v, gridHeight);
-                setIsDirty(true);
-              }}
-            />
-            ×
-            <input
-              type="number"
-              className="editor-size-input"
-              min={5}
-              max={500}
-              value={gridHeight}
-              onChange={e => {
-                const v = Math.max(5, Math.min(500, parseInt(e.target.value) || 5));
-                setGridHeight(v);
-                canvasRef.current?.resize(gridWidth, v);
-                setIsDirty(true);
-              }}
-            />
+            {mapData.name} — {gridWidth}×{gridHeight}
           </span>
         )}
       </div>

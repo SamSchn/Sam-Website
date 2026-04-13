@@ -669,18 +669,23 @@ a:hover { text-decoration: underline; }
   color: var(--text-muted);
   font-size: .7rem;
   font-family: monospace;
+}
+.editor-size-group {
   display: flex;
   align-items: center;
-  gap: 2px;
+  gap: 3px;
+  color: var(--text-muted);
+  font-size: .75rem;
+  margin-left: 4px;
 }
 .editor-size-input {
   width: 3.5em;
-  padding: 1px 3px;
-  font-size: .7rem;
+  padding: 2px 4px;
+  font-size: .75rem;
   font-family: monospace;
   background: var(--bg-secondary, #1a1a2e);
-  color: var(--text-muted);
-  border: 1px solid rgba(255,255,255,.15);
+  color: var(--text);
+  border: 1px solid rgba(255,255,255,.2);
   border-radius: 3px;
   text-align: center;
 }
