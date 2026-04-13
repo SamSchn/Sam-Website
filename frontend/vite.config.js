@@ -12,5 +12,8 @@ export default defineConfig({
       usePolling: true,
       interval: 500,
     },
+    allowedHosts: ['everythingsam.com', 'www.everythingsam.com'],
   },
 });
+
+
