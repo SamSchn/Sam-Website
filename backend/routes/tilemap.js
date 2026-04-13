@@ -18,8 +18,8 @@ router.post('/', authenticateToken, (req, res) => {
   const { name, width, height } = req.body;
   if (!name || !name.trim()) return res.status(400).json({ error: 'name is required' });
 
-  const w = Math.max(5, Math.min(200, parseInt(width) || 30));
-  const h = Math.max(5, Math.min(200, parseInt(height) || 30));
+  const w = Math.max(5, Math.min(500, parseInt(width) || 30));
+  const h = Math.max(5, Math.min(500, parseInt(height) || 30));
 
   const db = getDb();
 
@@ -95,8 +95,8 @@ router.put('/:id', authenticateToken, (req, res) => {
 
   const { name, width, height } = req.body;
   const newName = name ? name.trim() : map.name;
-  const newW = width != null ? Math.max(5, Math.min(200, parseInt(width) || map.width)) : map.width;
-  const newH = height != null ? Math.max(5, Math.min(200, parseInt(height) || map.height)) : map.height;
+  const newW = width != null ? Math.max(5, Math.min(500, parseInt(width) || map.width)) : map.width;
+  const newH = height != null ? Math.max(5, Math.min(500, parseInt(height) || map.height)) : map.height;
 
   if (newName !== map.name) {
     const dup = db.prepare('SELECT id FROM tile_maps WHERE name = ? AND id != ?').get(newName, map.id);

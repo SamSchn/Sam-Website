@@ -42,6 +42,40 @@ const EditorCanvas = forwardRef(function EditorCanvas(props, ref) {
     clearDirty() {
       if (internalsRef.current) internalsRef.current.dirty.clear();
     },
+    resize(w, h) {
+      const S = internalsRef.current;
+      if (!S) return;
+      S.mapW = w;
+      S.mapH = h;
+      if (S.checker) {
+        S.checker.clear();
+        for (let y = 0; y < S.mapH; y++) {
+          for (let x = 0; x < S.mapW; x++) {
+            S.checker.rect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+            S.checker.fill((x + y) % 2 === 0 ? 0x222233 : 0x1a1a2e);
+          }
+        }
+      }
+      if (S.grid) {
+        S.grid.clear();
+        const zoom = S.world?.scale.x || INITIAL_ZOOM;
+        S.grid.setStrokeStyle({ width: 0.5 / zoom, color: 0xffffff, alpha: 0.15 });
+        for (let x = 0; x <= S.mapW; x++) {
+          S.grid.moveTo(x * TILE_SIZE, 0).lineTo(x * TILE_SIZE, S.mapH * TILE_SIZE);
+        }
+        for (let y = 0; y <= S.mapH; y++) {
+          S.grid.moveTo(0, y * TILE_SIZE).lineTo(S.mapW * TILE_SIZE, y * TILE_SIZE);
+        }
+        S.grid.stroke();
+        S.grid.setStrokeStyle({ width: 1.5 / zoom, color: 0xf0b840, alpha: 0.5 });
+        S.grid.rect(0, 0, S.mapW * TILE_SIZE, S.mapH * TILE_SIZE);
+        S.grid.stroke();
+      }
+    },
+    getSize() {
+      const S = internalsRef.current;
+      return S ? { width: S.mapW, height: S.mapH } : null;
+    },
   }));
 
   // Main PixiJS init — runs once

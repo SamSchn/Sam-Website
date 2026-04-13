@@ -22,6 +22,10 @@ export default function TileEditor() {
   const [layerVisibility, setLayerVisibility] = useState([true, true, true]);
   const [showGrid, setShowGrid] = useState(true);
 
+  // Live grid dimensions (editable while editing)
+  const [gridWidth, setGridWidth] = useState(30);
+  const [gridHeight, setGridHeight] = useState(30);
+
   // New map dialog
   const [showNewMap, setShowNewMap] = useState(false);
   const [newMapName, setNewMapName] = useState('');
@@ -50,6 +54,8 @@ export default function TileEditor() {
       const data = await api.getTileMap(id);
       setCurrentMapId(id);
       setMapData(data);
+      setGridWidth(data.width || 30);
+      setGridHeight(data.height || 30);
       setIsDirty(false);
     } catch (err) {
       showToast('Failed to load map: ' + err.message, 'error');
@@ -76,6 +82,12 @@ export default function TileEditor() {
     try {
       const cells = canvasRef.current.getAllCells();
       const deleted = canvasRef.current.getDeletedCells();
+      const size = canvasRef.current.getSize();
+
+      // Persist updated dimensions
+      if (size) {
+        await api.updateTileMap(currentMapId, { width: size.width, height: size.height });
+      }
 
       if (deleted.length > 0) {
         await api.deleteTileMapCells(currentMapId, deleted);
@@ -299,7 +311,34 @@ export default function TileEditor() {
         ))}
         {mapData && (
           <span className="editor-map-info">
-            {mapData.name} — {mapData.width}×{mapData.height}
+            {mapData.name} —{' '}
+            <input
+              type="number"
+              className="editor-size-input"
+              min={5}
+              max={500}
+              value={gridWidth}
+              onChange={e => {
+                const v = Math.max(5, Math.min(500, parseInt(e.target.value) || 5));
+                setGridWidth(v);
+                canvasRef.current?.resize(v, gridHeight);
+                setIsDirty(true);
+              }}
+            />
+            ×
+            <input
+              type="number"
+              className="editor-size-input"
+              min={5}
+              max={500}
+              value={gridHeight}
+              onChange={e => {
+                const v = Math.max(5, Math.min(500, parseInt(e.target.value) || 5));
+                setGridHeight(v);
+                canvasRef.current?.resize(gridWidth, v);
+                setIsDirty(true);
+              }}
+            />
           </span>
         )}
       </div>
