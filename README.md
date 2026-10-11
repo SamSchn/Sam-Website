@@ -4,7 +4,7 @@ A personal website that's a little Stardew Valley–style village. Instead of pa
 
 - **Village** (`/`): the outdoor hub with houses, a town square, a pond and villagers to talk to
 - **Sam's house** (`/house`): every piece of furniture opens something: the portrait (About), the bookshelf (Projects), the desk (Resume), the letters and the mailbox outside (Contact), the TV (News) and the bulletin board
-- **Garden** (`/garden`): walk east from the village; ideas planted as seeds
+- **Garden** (`/garden`): walk east from the village. Each plant is one of Sam's ideas, planted in tilled beds. Plants grow one stage each time they're watered (anyone can water a plant once its soil dries), and they wilt, then wither, if left dry. The owner picks the crop and the growth and wither speeds when planting. Growth is worked out from timestamps (`backend/garden/growth.js`), so there's no background job
 - **Editor** (`/editor`, owner only): paint terrain, place, move and configure objects and villagers, then save
 
 ## How it fits together

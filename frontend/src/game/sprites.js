@@ -23,6 +23,7 @@ const I = '/sprites/interior/';
 const CU = '/sprites/custom/';
 const TL = '/sprites/tiles/';
 const AD = '/animations/decor/';
+const FW = '/sprites/fence/Fences.png';
 
 export const SPRITES = {
   // ---------------------------------------------------------------- buildings
@@ -64,6 +65,32 @@ export const SPRITES = {
     ],
     door: { x: 32, y: 103, w: 15, h: 10 },
   },
+
+  // ---------------------------------------------------------------- farm
+  greenhouse: {
+    label: 'Greenhouse',
+    sheet: '/sprites/farm/GreenHouse_Wood.png', x: 0, y: 0, w: 96, h: 116,
+    sortY: 112, solid: [{ x: 12, y: 66, w: 72, h: 46 }],
+    windows: [{ x: 30, y: 60 }, { x: 66, y: 60 }],
+  },
+  shed: {
+    label: 'Seed shed',
+    sheet: '/sprites/farm/Shed_Base_Red.png', x: 0, y: 0, w: 96, h: 112,
+    sortY: 98, solid: [{ x: 14, y: 58, w: 68, h: 40 }],
+  },
+  scarecrow: { sheet: `${D}Scarecrows.png`, x: 64, y: 0, w: 32, h: 32, sortY: 30, solid: [{ x: 13, y: 24, w: 6, h: 6 }] },
+  scarecrow_green: { sheet: `${D}Scarecrows.png`, x: 0, y: 0, w: 32, h: 32, sortY: 30, solid: [{ x: 13, y: 24, w: 6, h: 6 }] },
+  // wooden fence: a 3x3 enclosure set, plus end posts for gate openings
+  fence_wood_tl: { sheet: FW, x: 16, y: 16, w: 16, h: 16, sortY: 12, solid: [{ x: 5, y: 5, w: 11, h: 6 }, { x: 5, y: 5, w: 6, h: 11 }] },
+  fence_wood_t: { sheet: FW, x: 32, y: 16, w: 16, h: 16, sortY: 12, solid: [{ x: 0, y: 5, w: 16, h: 6 }] },
+  fence_wood_tr: { sheet: FW, x: 48, y: 16, w: 16, h: 16, sortY: 12, solid: [{ x: 0, y: 5, w: 11, h: 6 }, { x: 5, y: 5, w: 6, h: 11 }] },
+  fence_wood_l: { sheet: FW, x: 16, y: 32, w: 16, h: 16, sortY: 14, solid: [{ x: 5, y: 0, w: 6, h: 16 }] },
+  fence_wood_r: { sheet: FW, x: 48, y: 32, w: 16, h: 16, sortY: 14, solid: [{ x: 5, y: 0, w: 6, h: 16 }] },
+  fence_wood_bl: { sheet: FW, x: 16, y: 48, w: 16, h: 16, sortY: 12, solid: [{ x: 5, y: 0, w: 6, h: 11 }, { x: 5, y: 5, w: 11, h: 6 }] },
+  fence_wood_b: { sheet: FW, x: 32, y: 48, w: 16, h: 16, sortY: 12, solid: [{ x: 0, y: 5, w: 16, h: 6 }] },
+  fence_wood_br: { sheet: FW, x: 48, y: 48, w: 16, h: 16, sortY: 12, solid: [{ x: 5, y: 0, w: 6, h: 11 }, { x: 0, y: 5, w: 11, h: 6 }] },
+  fence_wood_end_top: { sheet: FW, x: 0, y: 32, w: 16, h: 16, sortY: 14, solid: [{ x: 5, y: 0, w: 6, h: 12 }] },
+  fence_wood_end_bottom: { sheet: FW, x: 0, y: 0, w: 16, h: 16, sortY: 14, solid: [{ x: 5, y: 3, w: 6, h: 13 }] },
 
   // ---------------------------------------------------------------- trees
   oak: {

@@ -10,6 +10,7 @@ const CATEGORY_CONFIG = {
   crops:     { name: 'Crops',     tileW: 16, tileH: 16 },
   buildings: { name: 'Buildings', tileW: 16, tileH: 16 },
   interior:  { name: 'Interior',  tileW: 16, tileH: 16 },
+  farm:      { name: 'Farm',      tileW: 16, tileH: 16 },
   decor:     { name: 'Decor',     tileW: 16, tileH: 16 },
   fence:     { name: 'Fence',     tileW: 16, tileH: 16 },
   trees:     { name: 'Trees',     tileW: 16, tileH: 16 },

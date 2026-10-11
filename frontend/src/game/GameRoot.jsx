@@ -8,6 +8,9 @@ import DialogueBox from './ui/DialogueBox';
 import { PANELS } from './ui/panels';
 import GameMenu, { LoginPanel } from './ui/GameMenu';
 import { Clock, LocationBanner, ControlsHint } from './ui/Hud';
+import { useAuth } from '../context/AuthContext';
+import { useGarden } from './garden/useGarden';
+import { PlantPanel, PlantDialog } from './garden/PlantPanels';
 import './game.css';
 
 const FADE_MS = 280;
@@ -45,9 +48,27 @@ export default function GameRoot() {
   const [menu, setMenu] = useState(false);
   const [login, setLogin] = useState(location.pathname === '/login');
   const [hourOverride, setHourOverride] = useState(hourFromUrl);
+  const [plantId, setPlantId] = useState(null);
+  const [plot, setPlot] = useState(null);
+  const [toast, setToast] = useState('');
+  const { user } = useAuth();
 
   const mapId = mapIdForPath(location.pathname) || 'village';
-  const uiOpen = !!(dialog || panel || menu || login);
+  const uiOpen = !!(dialog || panel || menu || login || plantId || plot);
+
+  const toastTimer = useRef(null);
+  const showToast = useCallback((msg) => {
+    setToast(msg);
+    clearTimeout(toastTimer.current);
+    toastTimer.current = setTimeout(() => setToast(''), 3200);
+  }, []);
+  useEffect(() => () => clearTimeout(toastTimer.current), []);
+
+  const garden = useGarden({ worldRef, active: ready && mapId === 'garden', user, toast: showToast });
+  // close a plant's window if that plant goes away (pulled up, or we left the garden)
+  useEffect(() => {
+    if (plantId && !garden.getPlant(plantId)) setPlantId(null);
+  }, [plantId, garden]);
 
   // ---- warps: either another map (via the URL) or another page entirely
   const handleWarp = useCallback((to) => {
@@ -69,6 +90,8 @@ export default function GameRoot() {
       onInteract: (it) => {
         if (it.type === 'dialog') setDialog({ speaker: it.speaker, lines: it.lines, portraitSprite: it.portraitSprite });
         else if (it.type === 'panel') setPanel(it.panel);
+        else if (it.type === 'plant') setPlantId(it.plantId);
+        else if (it.type === 'plot') setPlot({ c: it.c, r: it.r });
         else if (it.type === 'link') window.open(it.href, '_blank', 'noopener');
       },
       onWarp: (to) => handleWarpRef.current(to),
@@ -187,6 +210,26 @@ export default function GameRoot() {
         />
       )}
       {login && <LoginPanel onClose={closeLogin} />}
+
+      {plantId && (
+        <PlantPanel
+          plant={garden.getPlant(plantId)}
+          now={garden.now}
+          isOwner={!!user && garden.getPlant(plantId)?.author_id === user.id}
+          onWater={garden.water}
+          onSunshine={garden.sunshine}
+          onUpdate={garden.update}
+          onRemove={async (p) => { await garden.remove(p); setPlantId(null); }}
+          onClose={() => setPlantId(null)}
+        />
+      )}
+      {plot && (
+        <PlantDialog
+          onPlant={async (data) => { await garden.plantSeed({ ...data, grid_x: plot.c, grid_y: plot.r }); setPlot(null); }}
+          onClose={() => setPlot(null)}
+        />
+      )}
+      {toast && <div className="toast pixel-frame" role="status">{toast}</div>}
 
       <div className={`fade${fade ? ' on' : ''}`} aria-hidden />
       {!ready && !loadError && <div className="boot pixel-frame">Loading {SITE.title}…</div>}

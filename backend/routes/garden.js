@@ -1,166 +1,154 @@
 const express = require('express');
 const { getDb } = require('../db/init');
 const { authenticateToken } = require('../middleware/auth');
+const { CROPS, GRID, LIMITS, MAX_STAGE, plantState } = require('../garden/growth');
 
 const router = express.Router();
 
-const PLANT_TYPES = [
-  'sunflower', 'cactus', 'bonsai', 'herb', 'rose', 'vine', 'mushroom', 'fern',
-];
+const SELECT_PLANT = `
+  SELECT garden_plants.*, users.display_name AS author_name
+  FROM garden_plants
+  JOIN users ON users.id = garden_plants.author_id
+`;
 
-const MAX_GROWTH = 4;   // 0-4 (5 stages: seed, sprout, young, mature, blooming)
-const MAX_WITHER = 2;   // 0-2 (3 stages: fading, wilting, withered)
+function withState(p, now = Date.now()) {
+  return {
+    id: p.id,
+    author_id: p.author_id,
+    author_name: p.author_name,
+    title: p.title,
+    description: p.description,
+    crop: p.plant_type,
+    grid_x: p.grid_x,
+    grid_y: p.grid_y,
+    growth_hours: p.growth_hours,
+    wither_hours: p.wither_hours,
+    water_count: p.water_count,
+    sunshine_count: p.sunshine_count,
+    setbacks: p.setbacks,
+    last_watered: p.last_watered,
+    created_at: p.created_at,
+    state: plantState(p, now),
+  };
+}
 
-// GET /api/garden — all plants + grid settings
+const getPlant = (id) => getDb().prepare(`${SELECT_PLANT} WHERE garden_plants.id = ?`).get(id);
+
+function readSpeeds(body, current = {}) {
+  const out = {};
+  for (const [key, limit] of [['growth_hours', LIMITS.growth], ['wither_hours', LIMITS.wither]]) {
+    const v = body[key] ?? current[key];
+    if (typeof v !== 'number' || !Number.isFinite(v) || v < limit.min || v > limit.max) {
+      return { error: `${key} must be between ${limit.min} and ${limit.max} hours` };
+    }
+    out[key] = v;
+  }
+  return out;
+}
+
+// GET /api/garden — every plant with its current growth state
 router.get('/', (_req, res) => {
-  const db = getDb();
-  const plants = db.prepare(`
-    SELECT garden_plants.*, users.display_name AS author_name
-    FROM garden_plants
-    JOIN users ON users.id = garden_plants.author_id
-    ORDER BY garden_plants.created_at DESC
-  `).all();
-  const settings = db.prepare('SELECT * FROM garden_settings WHERE id = 1').get();
-  res.json({ plants, settings: settings || { grid_width: 15, grid_height: 15 } });
+  const now = Date.now();
+  const plants = getDb().prepare(`${SELECT_PLANT} ORDER BY garden_plants.created_at`).all();
+  res.json({ plants: plants.map(p => withState(p, now)), grid: GRID, maxStage: MAX_STAGE, crops: CROPS, now });
 });
 
-// GET /api/garden/types — list available plant types
-router.get('/types', (_req, res) => {
-  res.json(PLANT_TYPES);
-});
-
-// POST /api/garden/plant — plant something (authenticated)
+// POST /api/garden/plant — plant a seed (owner). Planting also waters it.
 router.post('/plant', authenticateToken, (req, res) => {
-  const { title, description, plant_type, grid_x, grid_y } = req.body;
-  if (typeof title !== 'string' || !title.trim()) return res.status(400).json({ error: 'title is required' });
-  if (description != null && typeof description !== 'string') return res.status(400).json({ error: 'description must be a string' });
-  if (!Number.isInteger(grid_x) || !Number.isInteger(grid_y)) return res.status(400).json({ error: 'grid position is required' });
-  if (plant_type && !PLANT_TYPES.includes(plant_type)) {
-    return res.status(400).json({ error: 'Invalid plant type' });
+  const { title, description, crop, grid_x, grid_y } = req.body;
+  if (typeof title !== 'string' || !title.trim() || title.length > 80) {
+    return res.status(400).json({ error: 'Give your idea a name (up to 80 characters)' });
   }
+  if (description != null && (typeof description !== 'string' || description.length > 2000)) {
+    return res.status(400).json({ error: 'Description must be text (up to 2000 characters)' });
+  }
+  if (!CROPS.includes(crop)) return res.status(400).json({ error: 'Pick a seed to plant' });
+  if (!Number.isInteger(grid_x) || !Number.isInteger(grid_y)
+      || grid_x < 0 || grid_y < 0 || grid_x >= GRID.cols || grid_y >= GRID.rows) {
+    return res.status(400).json({ error: 'That plot is outside the garden' });
+  }
+  const speeds = readSpeeds(req.body);
+  if (speeds.error) return res.status(400).json({ error: speeds.error });
 
   const db = getDb();
-  const settings = db.prepare('SELECT * FROM garden_settings WHERE id = 1').get();
-  const gw = settings ? settings.grid_width : 15;
-  const gh = settings ? settings.grid_height : 15;
-
-  if (grid_x < 0 || grid_x >= gw || grid_y < 0 || grid_y >= gh) {
-    return res.status(400).json({ error: 'Position out of bounds' });
+  if (db.prepare('SELECT id FROM garden_plants WHERE grid_x = ? AND grid_y = ?').get(grid_x, grid_y)) {
+    return res.status(409).json({ error: 'Something is already growing there' });
   }
-
-  const existing = db.prepare(
-    'SELECT id FROM garden_plants WHERE grid_x = ? AND grid_y = ?'
-  ).get(grid_x, grid_y);
-  if (existing) return res.status(409).json({ error: 'Plot already occupied' });
-
   const result = db.prepare(`
-    INSERT INTO garden_plants (author_id, title, description, plant_type, grid_x, grid_y)
-    VALUES (?, ?, ?, ?, ?, ?)
-  `).run(req.user.id, title, description || '', plant_type || 'sunflower', grid_x, grid_y);
+    INSERT INTO garden_plants
+      (author_id, title, description, plant_type, grid_x, grid_y, growth_hours, wither_hours, water_count, last_watered)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1, datetime('now'))
+  `).run(req.user.id, title.trim(), (description || '').trim(), crop, grid_x, grid_y, speeds.growth_hours, speeds.wither_hours);
 
-  const plant = db.prepare('SELECT * FROM garden_plants WHERE id = ?').get(result.lastInsertRowid);
-  res.status(201).json(plant);
+  res.status(201).json(withState(getPlant(result.lastInsertRowid)));
 });
 
-// POST /api/garden/:id/water — water a plant (authenticated, owner only)
-router.post('/:id/water', authenticateToken, (req, res) => {
-  const db = getDb();
-  const plant = db.prepare('SELECT * FROM garden_plants WHERE id = ?').get(req.params.id);
+// POST /api/garden/:id/water — anyone can water a dry plant
+router.post('/:id/water', (req, res) => {
+  const plant = getPlant(req.params.id);
   if (!plant) return res.status(404).json({ error: 'Plant not found' });
-  if (plant.author_id !== req.user.id) return res.status(403).json({ error: 'Not your plant' });
-  if (plant.wither_stage > 0) return res.status(400).json({ error: 'Cannot water a withering plant. Revive it first.' });
-  if (plant.growth_stage >= MAX_GROWTH) return res.status(400).json({ error: 'Plant is fully grown!' });
 
-  const newGrowth = plant.growth_stage + 1;
-  const newWaterCount = plant.water_count + 1;
-  db.prepare(`
+  const now = Date.now();
+  const st = plantState(plant, now);
+  if (st.watered) {
+    return res.status(409).json({ error: 'The soil is still damp. Come back when it dries out!' });
+  }
+  // Reviving a withered plant costs it a stage
+  const setbacks = st.wither === 2 ? st.completed - Math.max(0, st.stage - 1) : plant.setbacks;
+  getDb().prepare(`
     UPDATE garden_plants
-    SET growth_stage = ?, water_count = ?, last_watered = datetime('now'), last_touched = datetime('now')
+    SET water_count = water_count + 1, last_watered = datetime('now'), setbacks = ?, last_touched = datetime('now')
     WHERE id = ?
-  `).run(newGrowth, newWaterCount, plant.id);
+  `).run(setbacks, plant.id);
 
-  const updated = db.prepare('SELECT * FROM garden_plants WHERE id = ?').get(plant.id);
-  res.json(updated);
+  res.json({ plant: withState(getPlant(plant.id)), revived: st.wither > 0, lostStage: st.wither === 2 && st.stage > 0 });
 });
 
-// POST /api/garden/:id/wither — advance wither (authenticated, owner only)
-router.post('/:id/wither', authenticateToken, (req, res) => {
-  const db = getDb();
-  const plant = db.prepare('SELECT * FROM garden_plants WHERE id = ?').get(req.params.id);
-  if (!plant) return res.status(404).json({ error: 'Plant not found' });
-  if (plant.author_id !== req.user.id) return res.status(403).json({ error: 'Not your plant' });
-  if (plant.wither_stage >= MAX_WITHER) return res.status(400).json({ error: 'Plant is fully withered' });
-
-  const newWither = plant.wither_stage + 1;
-  db.prepare(`
-    UPDATE garden_plants SET wither_stage = ?, last_touched = datetime('now') WHERE id = ?
-  `).run(newWither, plant.id);
-
-  const updated = db.prepare('SELECT * FROM garden_plants WHERE id = ?').get(plant.id);
-  res.json(updated);
-});
-
-// POST /api/garden/:id/revive — remove one wither stage (authenticated, owner only)
-router.post('/:id/revive', authenticateToken, (req, res) => {
-  const db = getDb();
-  const plant = db.prepare('SELECT * FROM garden_plants WHERE id = ?').get(req.params.id);
-  if (!plant) return res.status(404).json({ error: 'Plant not found' });
-  if (plant.author_id !== req.user.id) return res.status(403).json({ error: 'Not your plant' });
-  if (plant.wither_stage <= 0) return res.status(400).json({ error: 'Plant is not withering' });
-
-  db.prepare(`
-    UPDATE garden_plants SET wither_stage = wither_stage - 1, last_touched = datetime('now') WHERE id = ?
-  `).run(plant.id);
-
-  const updated = db.prepare('SELECT * FROM garden_plants WHERE id = ?').get(plant.id);
-  res.json(updated);
-});
-
-// POST /api/garden/:id/sunshine — visitor sunshine (no auth required)
+// POST /api/garden/:id/sunshine — visitors can cheer a plant on
 router.post('/:id/sunshine', (req, res) => {
   const db = getDb();
-  const plant = db.prepare('SELECT * FROM garden_plants WHERE id = ?').get(req.params.id);
-  if (!plant) return res.status(404).json({ error: 'Plant not found' });
-
-  db.prepare(`
-    UPDATE garden_plants SET sunshine_count = sunshine_count + 1 WHERE id = ?
-  `).run(plant.id);
-
-  const updated = db.prepare('SELECT * FROM garden_plants WHERE id = ?').get(plant.id);
-  res.json({ sunshine_count: updated.sunshine_count });
+  const result = db.prepare('UPDATE garden_plants SET sunshine_count = sunshine_count + 1 WHERE id = ?').run(req.params.id);
+  if (!result.changes) return res.status(404).json({ error: 'Plant not found' });
+  res.json(withState(getPlant(req.params.id)));
 });
 
-// DELETE /api/garden/:id — remove a plant (authenticated, owner only)
-router.delete('/:id', authenticateToken, (req, res) => {
-  const db = getDb();
-  const plant = db.prepare('SELECT * FROM garden_plants WHERE id = ?').get(req.params.id);
+// PUT /api/garden/:id — edit an idea (owner)
+router.put('/:id', authenticateToken, (req, res) => {
+  const plant = getPlant(req.params.id);
   if (!plant) return res.status(404).json({ error: 'Plant not found' });
   if (plant.author_id !== req.user.id) return res.status(403).json({ error: 'Not your plant' });
 
-  db.prepare('DELETE FROM garden_plants WHERE id = ?').run(plant.id);
-  res.json({ success: true });
+  const { title, description, crop } = req.body;
+  if (title != null && (typeof title !== 'string' || !title.trim() || title.length > 80)) {
+    return res.status(400).json({ error: 'Title must be 1-80 characters' });
+  }
+  if (description != null && (typeof description !== 'string' || description.length > 2000)) {
+    return res.status(400).json({ error: 'Description must be text (up to 2000 characters)' });
+  }
+  if (crop != null && !CROPS.includes(crop)) return res.status(400).json({ error: 'Unknown crop' });
+  const speeds = readSpeeds(req.body, plant);
+  if (speeds.error) return res.status(400).json({ error: speeds.error });
+
+  getDb().prepare(`
+    UPDATE garden_plants SET title = ?, description = ?, plant_type = ?, growth_hours = ?, wither_hours = ? WHERE id = ?
+  `).run(
+    title != null ? title.trim() : plant.title,
+    description != null ? description.trim() : plant.description,
+    crop ?? plant.plant_type,
+    speeds.growth_hours,
+    speeds.wither_hours,
+    plant.id,
+  );
+  res.json(withState(getPlant(plant.id)));
 });
 
-// PUT /api/garden/settings — update grid size (authenticated)
-router.put('/settings', authenticateToken, (req, res) => {
-  const { grid_width, grid_height } = req.body;
-  if (!Number.isInteger(grid_width) || !Number.isInteger(grid_height)) {
-    return res.status(400).json({ error: 'grid_width and grid_height must be integers' });
-  }
-  if (grid_width < 5 || grid_height < 5 || grid_width > 50 || grid_height > 50) {
-    return res.status(400).json({ error: 'Grid size must be between 5 and 50' });
-  }
-
-  const db = getDb();
-  const stranded = db.prepare(
-    'SELECT COUNT(*) AS n FROM garden_plants WHERE grid_x >= ? OR grid_y >= ?'
-  ).get(grid_width, grid_height).n;
-  if (stranded > 0) {
-    return res.status(409).json({ error: `${stranded} plant(s) would be outside the new grid. Move or remove them first.` });
-  }
-  db.prepare('UPDATE garden_settings SET grid_width = ?, grid_height = ? WHERE id = 1').run(grid_width, grid_height);
-  const settings = db.prepare('SELECT * FROM garden_settings WHERE id = 1').get();
-  res.json(settings);
+// DELETE /api/garden/:id — pull a plant up (owner)
+router.delete('/:id', authenticateToken, (req, res) => {
+  const plant = getPlant(req.params.id);
+  if (!plant) return res.status(404).json({ error: 'Plant not found' });
+  if (plant.author_id !== req.user.id) return res.status(403).json({ error: 'Not your plant' });
+  getDb().prepare('DELETE FROM garden_plants WHERE id = ?').run(plant.id);
+  res.json({ success: true });
 });
 
 module.exports = router;

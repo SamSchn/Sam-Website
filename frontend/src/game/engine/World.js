@@ -10,6 +10,8 @@ import { findPath } from './pathfinding';
 import { daylight } from './daylight';
 import { Ambient, AMBIENT_SHEETS } from './ambient';
 import { sfx } from './sound';
+import { cropFrame, GARDEN_SHEETS } from '../garden/crops';
+import { farmCell } from '../garden/farm';
 
 const SPEED = 80;            // px per second (~5 tiles/s, Stardew's run speed)
 const FOOT_W = 10;
@@ -171,6 +173,7 @@ export class World {
     const token = (this.loadToken = (this.loadToken || 0) + 1);
     const sheets = new Set(TERRAIN_SHEETS);
     if (map.outdoor && !this.editMode) AMBIENT_SHEETS.forEach(a => sheets.add(a));
+    if (map.farm) GARDEN_SHEETS.forEach(a => sheets.add(a));
     for (const o of map.objects) {
       const s = spriteDef(o);
       if (s) sheets.add(s.sheet);
@@ -219,6 +222,8 @@ export class World {
       }
     }
     view.addChild(ground, animGround);
+    this.wetLayer = new Container(); // darker soil under watered plants
+    view.addChild(this.wetLayer);
     if (!map.outdoor) view.addChild(this.buildRoomBorder(terrain));
 
     // ---- objects
@@ -341,6 +346,8 @@ export class World {
     }
 
     this.buildWalkGrid();
+    this.gardenViews = [];
+    if (this.garden) this.renderGarden();
     if (this.editMode) {
       this.overlay = new Graphics();
       view.addChild(this.overlay);
@@ -762,6 +769,104 @@ export class World {
       w: this.app.screen.width / this.zoom,
       h: this.app.screen.height / this.zoom,
     };
+  }
+
+  // ------------------------------------------------------------------ garden
+
+  /** garden: { plants: [{ id, crop, title, grid_x, grid_y, state }], owner: bool } */
+  setGarden(garden) {
+    this.garden = garden;
+    this.renderGarden();
+  }
+
+  renderGarden() {
+    const farm = this.map?.farm;
+    if (!farm || this.editMode || !this.entities || !this.garden) return;
+    for (const v of this.gardenViews) v.destroy();
+    this.gardenViews = [];
+    this.interactables = this.interactables.filter(i => !i.plot);
+
+    const W = this.terrain.width;
+    const byCell = new Map(this.garden.plants.map(p => [`${p.grid_x},${p.grid_y}`, p]));
+    for (let r = 0; r < farm.rows; r++) {
+      for (let c = 0; c < farm.cols; c++) {
+        const { tx, ty } = farmCell(farm, c, r);
+        const rect = { x: tx * TILE, y: ty * TILE, w: TILE, h: TILE };
+        const p = byCell.get(`${c},${r}`);
+        if (!p) {
+          if (this.garden.owner) {
+            this.interactables.push({
+              plot: true, obj: { id: `plot_${c}_${r}` },
+              interact: { type: 'plot', c, r, label: 'Plant a seed' },
+              rect, sortY: rect.y + TILE, labelY: rect.y,
+            });
+          }
+          continue;
+        }
+
+        // wet soil
+        const piece = this.terrain.farmTiles.get(ty * W + tx);
+        if (p.state.watered && piece) {
+          const wet = new Sprite(this.tex(GARDEN_SHEETS[2], piece[0], piece[1], TILE, TILE));
+          wet.position.set(rect.x, rect.y);
+          this.wetLayer.addChild(wet);
+          this.gardenViews.push(wet);
+        }
+
+        // the plant, bottom-aligned on its plot
+        const f = cropFrame(p.crop, p.state.stage);
+        const s = new Sprite(this.tex(f.sheet, f.x, f.y, f.w, f.h));
+        s.position.set(rect.x, rect.y + TILE - f.h - 1);
+        s.zIndex = rect.y + TILE - 3;
+        if (p.state.wither === 1) s.tint = 0xe8c060; // yellowing
+        if (p.state.wither === 2) {
+          // brown and drooping
+          s.tint = 0x8a5a32;
+          s.scale.y = 0.85;
+          s.y += Math.round(f.h * 0.15);
+        }
+        this.entities.addChild(s);
+        this.gardenViews.push(s);
+
+        this.interactables.push({
+          plot: true, obj: { id: `plant_${p.id}` },
+          interact: { type: 'plant', plantId: p.id, label: p.title },
+          rect, sortY: rect.y + TILE, labelY: rect.y + TILE - f.h - 2,
+        });
+      }
+    }
+    this.currentTarget = undefined; // re-announce the prompt (labels may have changed)
+  }
+
+  /** Little water splash on a plot (after watering). */
+  splash(c, r) {
+    const farm = this.map?.farm;
+    if (!farm || !this.mapView) return;
+    const { tx, ty } = farmCell(farm, c, r);
+    const cx = tx * TILE + TILE / 2, cy = ty * TILE + TILE / 2;
+    const drops = [];
+    for (let i = 0; i < 9; i++) {
+      const d = new Graphics().rect(0, 0, 1, 2).fill(i % 3 ? 0x6cc7ff : 0xd4f1ff);
+      d.position.set(cx + (Math.random() - 0.5) * 12, cy - 14 - Math.random() * 10);
+      this.mapView.addChild(d);
+      drops.push({ d, vy: 40 + Math.random() * 30, life: 0.35 + Math.random() * 0.25 });
+    }
+    const tick = (t) => {
+      const dt = t.deltaMS / 1000;
+      let alive = 0;
+      for (const p of drops) {
+        if (p.life <= 0 || p.d.destroyed) continue;
+        p.life -= dt;
+        p.d.y += p.vy * dt;
+        p.d.alpha = Math.max(0, p.life * 3);
+        if (p.life > 0) alive++;
+      }
+      if (!alive || !this.app) {
+        this.app?.ticker.remove(tick);
+        drops.forEach(p => { if (!p.d.destroyed) p.d.destroy(); });
+      }
+    };
+    this.app.ticker.add(tick);
   }
 
   // ------------------------------------------------------------------ villagers

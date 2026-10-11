@@ -24,7 +24,7 @@ export default function Palette({
   const [flat, setFlat] = useState(false);
 
   const terrainChoices = Object.entries(TERRAIN).filter(([, t]) =>
-    outdoor ? ['grass', 'dirt', 'cobble', 'water'].includes(t.type) : ['floor', 'wall', 'void'].includes(t.type) || t.type === 'grass');
+    outdoor ? ['grass', 'dirt', 'cobble', 'water', 'farm'].includes(t.type) : ['floor', 'wall', 'void'].includes(t.type) || t.type === 'grass');
 
   const catalog = Object.entries(SPRITES).filter(([name, d]) =>
     !filter || name.includes(filter.toLowerCase()) || (d.label || '').toLowerCase().includes(filter.toLowerCase()));

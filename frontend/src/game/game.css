@@ -565,3 +565,63 @@ kbd {
 .ce-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 8px; }
 .ce-item { position: relative; display: grid; gap: 8px; padding: 10px 12px; margin: 0; }
 .ce-list-controls { display: flex; gap: 4px; justify-content: flex-end; }
+
+.toast {
+  position: absolute;
+  top: 84px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 40;
+  border-width: 14px;
+  border-image-width: 14px;
+  font-size: 20px;
+  white-space: nowrap;
+  animation: pop-in 0.16s ease-out;
+}
+
+.plant-head { display: flex; align-items: center; gap: 14px; margin-bottom: 10px; }
+.plant-thumb { padding: 4px; }
+.plant-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 8px;
+  margin: 8px 0 14px;
+}
+.plant-stats > div { padding: 4px 10px; }
+.plant-stats dt { font-size: 15px; color: #6b4226; }
+.plant-stats dd { margin: 0; font-weight: 600; }
+.plant-stats dd.withering { color: #a0522d; }
+.pips { display: flex; gap: 3px; padding-top: 4px; }
+.pip { width: 16px; height: 9px; background: #d9a868; border: 2px solid #b9824f; }
+.pip.on { background: #5aa246; border-color: #3b7a2e; }
+.pip.on.dry { background: #c9a04a; border-color: #8a6a2a; }
+.plant-actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+
+.ed-field-like { display: grid; gap: 4px; }
+.seed-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+.seed {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 6px 2px;
+  font: inherit;
+  font-size: 14px;
+  color: #3b1e12;
+  cursor: pointer;
+}
+.seed.on { border-color: #5b2c1c; background: #f6c983; }
+
+
+.plant-desc { white-space: pre-wrap; }
+.plant-status { padding: 6px 10px; border-left: 4px solid var(--parch-deep); background: #fff3d6; }
+.plant-status.good { border-color: #5aa246; }
+.plant-status.warn { border-color: #d9822b; }
+.plant-status.bad { border-color: var(--accent); }
+.plant-thumb.wither-1 .thumb > span { filter: sepia(0.6) saturate(0.8); }
+.plant-thumb.wither-2 .thumb > span { filter: sepia(1) brightness(0.75); }
+.plant-form select { font: inherit; color: var(--ink); padding: 6px 8px; background: #fff3d6; border: 3px solid var(--parch-deep); border-radius: 2px; }
+.seed-grid { max-height: 220px; overflow-y: auto; padding: 2px; }
+@media (max-width: 640px) {
+  .seed-grid { grid-template-columns: repeat(3, 1fr); }
+}

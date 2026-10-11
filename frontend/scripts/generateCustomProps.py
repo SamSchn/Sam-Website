@@ -326,6 +326,19 @@ def grass_tiles():
     save(im, 'grass_tiles.png')
 
 
+# ---------------------------------------------------------------- seed mound (freshly planted)
+def seed_mound():
+    im = new(16, 16)
+    for y in range(9, 15):
+        for x in range(2, 14):
+            if ((x - 7.5) / 5.5) ** 2 + ((y - 12.5) / 2.6) ** 2 <= 1:
+                px(im, x, y, 'd' if y >= 13 else 'D')
+    for x, y in [(5, 11), (8, 10), (10, 12), (7, 12)]:
+        px(im, x, y, 'Q')
+    rect(im, 4, 14, 11, 14, (0, 0, 0, 40))
+    save(im, 'seed_mound.png')
+
+
 # ---------------------------------------------------------------- UI icons (16x16)
 ICON_NAMES = ['book', 'portrait', 'scroll', 'letter', 'tv', 'pin', 'gear', 'key',
               'sun', 'moon', 'leaf', 'flower', 'snow', 'code', 'briefcase', 'sprout']
@@ -506,4 +519,5 @@ if __name__ == '__main__':
     papers()
     grass_tiles()
     ui_icons()
+    seed_mound()
     ui_frame()

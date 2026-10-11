@@ -1,6 +1,5 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
 import GameRoot from './game/GameRoot';
-import Garden from './pages/Garden';
 import VillageEditor from './game/editor/VillageEditor';
 import { useAuth } from './context/AuthContext';
 
@@ -18,10 +17,10 @@ export default function App() {
       <Route element={<GameRoot />}>
         <Route path="/" element={null} />
         <Route path="/house" element={null} />
+        <Route path="/garden" element={null} />
         <Route path="/login" element={null} />
       </Route>
 
-      <Route path="/garden" element={<Garden />} />
       <Route path="/editor" element={<VillageEditor />} />
 
       {/* Old page URLs now live inside the house */}

@@ -9,6 +9,7 @@ export const TERRAIN = {
   'x': { type: 'grass', solid: true, label: 'Grass (blocked)' },
   'd': { type: 'dirt', label: 'Dirt path' },
   'c': { type: 'cobble', label: 'Cobblestone' },
+  'F': { type: 'farm', label: 'Farmland' },
   'w': { type: 'water', solid: true, label: 'Water' },
   'f': { type: 'floor', label: 'Wood floor' },
   'W': { type: 'wall', solid: true, label: 'Wall' },
@@ -19,7 +20,9 @@ const TL = '/sprites/tiles/';
 
 // 3x3 edge block + 2x2 inner-corner block, as laid out in the Cute Fantasy sheets
 const AUTOTILES = {
-  dirt: { sheet: `${TL}Grass_Grass_Tiles_1.png`, edge: [0, 80], inner: [0, 128], members: ['dirt', 'cobble'] },
+  dirt: { sheet: `${TL}Grass_Grass_Tiles_1.png`, edge: [0, 80], inner: [0, 128], members: ['dirt', 'cobble', 'farm'] },
+  // tilled beds: 3x3 block, no inner corners (beds are rectangles)
+  farm: { sheet: `${TL}FarmLand_Tile.png`, edge: [16, 0], inner: null, members: ['farm'] },
   cobble: { sheet: `${TL}Cobble_Road_Cobble_Road_1.png`, edge: [0, 0], inner: [0, 48], members: ['cobble'] },
   water: {
     sheet: '/animations/tiles/Water_Water_Tile_1_Anim.png', edge: [0, 0], inner: [0, 48], members: ['water'],
@@ -46,7 +49,7 @@ function hash(x, y) {
 function autotile(set, same, x, y) {
   const n = same(x, y - 1), s = same(x, y + 1), w = same(x - 1, y), e = same(x + 1, y);
   const [ex, ey] = set.edge;
-  const [ix, iy] = set.inner;
+  const [ix, iy] = set.inner || [0, 0];
   const E = (c, r) => [ex + c * TILE, ey + r * TILE];
   if (!n && !w) return E(0, 0);
   if (!n && !e) return E(2, 0);
@@ -56,6 +59,7 @@ function autotile(set, same, x, y) {
   if (!s) return E(1, 2);
   if (!w) return E(0, 1);
   if (!e) return E(2, 1);
+  if (!set.inner) return E(1, 1);
   // Concave corners: the inner block is a blob of the *outer* terrain, so the
   // tile with the blob in its bottom-right is the one for a missing SE neighbour.
   if (!same(x - 1, y - 1)) return [ix + TILE, iy + TILE];
@@ -92,6 +96,7 @@ export function buildTerrain(map) {
   };
 
   const tiles = [];
+  const farmTiles = new Map();
   const push = (sheet, sx, sy, x, y, anim) => tiles.push({ sheet, sx, sy, x: x * TILE, y: y * TILE, anim });
 
   for (let y = 0; y < H; y++) {
@@ -120,13 +125,18 @@ export function buildTerrain(map) {
       const variant = r < 0.55 ? 0 : 1 + Math.floor(hash(y, x) * 7);
       push(GRASS_SHEET, variant * TILE, 0, x, y);
 
-      if (t === 'dirt' || t === 'cobble') {
+      if (t === 'dirt' || t === 'cobble' || t === 'farm') {
         const [sx, sy] = autotile(AUTOTILES.dirt, sameAs(AUTOTILES.dirt.members), x, y);
         push(AUTOTILES.dirt.sheet, sx, sy, x, y);
       }
       if (t === 'cobble') {
         const [sx, sy] = autotile(AUTOTILES.cobble, sameAs(AUTOTILES.cobble.members), x, y);
         push(AUTOTILES.cobble.sheet, sx, sy, x, y);
+      }
+      if (t === 'farm') {
+        const [sx, sy] = autotile(AUTOTILES.farm, sameAs(AUTOTILES.farm.members), x, y);
+        push(AUTOTILES.farm.sheet, sx, sy, x, y);
+        farmTiles.set(y * W + x, [sx, sy]); // the wet-soil overlay reuses this piece
       }
       if (t === 'water') {
         const set = AUTOTILES.water;
@@ -136,7 +146,7 @@ export function buildTerrain(map) {
     }
   }
 
-  return { width: W, height: H, tiles, solid, types };
+  return { width: W, height: H, tiles, solid, types, farmTiles };
 }
 
 /** Dev helper: warn about 1-tile-wide strips, which the autotile sets can't draw. */
@@ -146,12 +156,12 @@ export function validateTerrain(map) {
   for (let y = 0; y < rows.length; y++) {
     for (let x = 0; x < rows[y].length; x++) {
       const t = TERRAIN[rows[y][x]]?.type;
-      if (!['dirt', 'cobble', 'water'].includes(t)) continue;
+      if (!['dirt', 'cobble', 'water', 'farm'].includes(t)) continue;
       const same = (dx, dy) => {
         const c = rows[y + dy]?.[x + dx];
         if (c === undefined) return true;
         const tt = TERRAIN[c]?.type;
-        return t === 'dirt' ? tt === 'dirt' || tt === 'cobble' : tt === t;
+        return t === 'dirt' ? ['dirt', 'cobble', 'farm'].includes(tt) : tt === t;
       };
       if ((!same(0, -1) && !same(0, 1)) || (!same(-1, 0) && !same(1, 0))) {
         problems.push(`${map.id}: 1-tile ${t} strip at (${x}, ${y})`);

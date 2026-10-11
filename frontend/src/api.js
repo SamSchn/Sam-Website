@@ -44,21 +44,13 @@ export const api = {
 
   // Digital Garden
   getGarden: () => request('/garden'),
-  getPlantTypes: () => request('/garden/types'),
-  plantSeed: (title, description, plant_type, grid_x, grid_y) =>
-    request('/garden/plant', { method: 'POST', body: JSON.stringify({ title, description, plant_type, grid_x, grid_y }) }),
-  waterPlant: (id) =>
-    request(`/garden/${id}/water`, { method: 'POST' }),
-  witherPlant: (id) =>
-    request(`/garden/${id}/wither`, { method: 'POST' }),
-  revivePlant: (id) =>
-    request(`/garden/${id}/revive`, { method: 'POST' }),
-  sunshinePlant: (id) =>
-    request(`/garden/${id}/sunshine`, { method: 'POST' }),
-  deletePlant: (id) =>
-    request(`/garden/${id}`, { method: 'DELETE' }),
-  updateGardenSettings: (grid_width, grid_height) =>
-    request('/garden/settings', { method: 'PUT', body: JSON.stringify({ grid_width, grid_height }) }),
+  plantSeed: (data) =>
+    request('/garden/plant', { method: 'POST', body: JSON.stringify(data) }),
+  waterPlant: (id) => request(`/garden/${id}/water`, { method: 'POST' }),
+  sunshinePlant: (id) => request(`/garden/${id}/sunshine`, { method: 'POST' }),
+  updatePlant: (id, data) =>
+    request(`/garden/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+  deletePlant: (id) => request(`/garden/${id}`, { method: 'DELETE' }),
 
   // Site content (owner-edited About / Projects / Resume / Contact)
   getContent: () => request('/content'),

@@ -1250,6 +1250,142 @@ export const SPRITE_CATEGORIES = [
     ]
   },
   {
+    "name": "Interior",
+    "sheets": [
+      {
+        "path": "sprites/interior/Beds.png",
+        "tileW": 16,
+        "tileH": 16,
+        "label": "Beds"
+      },
+      {
+        "path": "sprites/interior/BookShelves.png",
+        "tileW": 16,
+        "tileH": 16,
+        "label": "BookShelves"
+      },
+      {
+        "path": "sprites/interior/Chairs.png",
+        "tileW": 16,
+        "tileH": 16,
+        "label": "Chairs"
+      },
+      {
+        "path": "sprites/interior/Chest_Anim.png",
+        "tileW": 16,
+        "tileH": 16,
+        "label": "Chest Anim"
+      },
+      {
+        "path": "sprites/interior/Chimney_smoke_Anim.png",
+        "tileW": 16,
+        "tileH": 16,
+        "label": "Chimney smoke Anim"
+      },
+      {
+        "path": "sprites/interior/Doors.png",
+        "tileW": 16,
+        "tileH": 16,
+        "label": "Doors"
+      },
+      {
+        "path": "sprites/interior/Drawers.png",
+        "tileW": 16,
+        "tileH": 16,
+        "label": "Drawers"
+      },
+      {
+        "path": "sprites/interior/Furnace_Anim.png",
+        "tileW": 16,
+        "tileH": 16,
+        "label": "Furnace Anim"
+      },
+      {
+        "path": "sprites/interior/Indoor_Decor.png",
+        "tileW": 16,
+        "tileH": 16,
+        "label": "Indoor Decor"
+      },
+      {
+        "path": "sprites/interior/Interior_Walls.png",
+        "tileW": 16,
+        "tileH": 16,
+        "label": "Interior Walls"
+      },
+      {
+        "path": "sprites/interior/Placeable_Decoration.png",
+        "tileW": 16,
+        "tileH": 16,
+        "label": "Placeable Decoration"
+      },
+      {
+        "path": "sprites/interior/Planters.png",
+        "tileW": 16,
+        "tileH": 16,
+        "label": "Planters"
+      },
+      {
+        "path": "sprites/interior/Standing_Lamps.png",
+        "tileW": 16,
+        "tileH": 16,
+        "label": "Standing Lamps"
+      },
+      {
+        "path": "sprites/interior/Tables.png",
+        "tileW": 16,
+        "tileH": 16,
+        "label": "Tables"
+      },
+      {
+        "path": "sprites/interior/Windows_Double.png",
+        "tileW": 16,
+        "tileH": 16,
+        "label": "Windows Double"
+      },
+      {
+        "path": "sprites/interior/Windows_Single.png",
+        "tileW": 16,
+        "tileH": 16,
+        "label": "Windows Single"
+      },
+      {
+        "path": "sprites/interior/Wood_Floor_Tiles.png",
+        "tileW": 16,
+        "tileH": 16,
+        "label": "Wood Floor Tiles"
+      },
+      {
+        "path": "sprites/interior/Wood_Stairs.png",
+        "tileW": 16,
+        "tileH": 16,
+        "label": "Wood Stairs"
+      },
+      {
+        "path": "sprites/interior/Wood_Wall_Fillers.png",
+        "tileW": 16,
+        "tileH": 16,
+        "label": "Wood Wall Fillers"
+      }
+    ]
+  },
+  {
+    "name": "Farm",
+    "sheets": [
+      {
+        "path": "sprites/farm/GreenHouse_Wood.png",
+        "tileW": 16,
+        "tileH": 16,
+        "label": "GreenHouse Wood"
+      },
+      {
+        "path": "sprites/farm/Shed_Base_Red.png",
+        "tileW": 16,
+        "tileH": 16,
+        "label": "Shed Base Red"
+      }
+    ]
+  },
+  {
     "name": "Decor",
     "sheets": [
       {
@@ -1359,6 +1495,12 @@ export const SPRITE_CATEGORIES = [
         "tileW": 16,
         "tileH": 16,
         "label": "Scarecrows"
+      },
+      {
+        "path": "sprites/decor/Signs.png",
+        "tileW": 16,
+        "tileH": 16,
+        "label": "Signs"
       },
       {
         "path": "sprites/decor/barrels.png",

@@ -139,6 +139,59 @@ function createTables() {
   if (cols.includes('anim_frames') && !cols.includes('anim_step')) {
     db.exec(`ALTER TABLE tile_map_cells ADD COLUMN anim_step INTEGER NOT NULL DEFAULT 1;`);
   }
+
+  migrateGarden();
+}
+
+// Garden v2: real-time growth with per-plant speeds, real crop types, and a
+// fixed 12x6 grid of beds. Existing plants keep the stage they had reached.
+function migrateGarden() {
+  const { GRID } = require('../garden/growth');
+  const cols = db.prepare('PRAGMA table_info(garden_plants)').all().map(c => c.name);
+  if (cols.includes('growth_hours')) return;
+
+  db.transaction(() => {
+    db.exec(`
+      ALTER TABLE garden_plants ADD COLUMN growth_hours REAL NOT NULL DEFAULT 24;
+      ALTER TABLE garden_plants ADD COLUMN wither_hours REAL NOT NULL DEFAULT 72;
+      ALTER TABLE garden_plants ADD COLUMN setbacks INTEGER NOT NULL DEFAULT 0;
+    `);
+    // Pretend every plant just finished a watering cycle so its current stage
+    // is preserved and it starts healthy
+    db.exec(`
+      UPDATE garden_plants
+      SET setbacks = water_count - growth_stage,
+          last_watered = datetime('now', '-24 hours')
+    `);
+
+    const renames = {
+      cactus: 'cucumber', bonsai: 'kale', herb: 'leek', rose: 'strawberry',
+      vine: 'grapes', mushroom: 'potato', fern: 'cabbage',
+    };
+    const rename = db.prepare('UPDATE garden_plants SET plant_type = ? WHERE plant_type = ?');
+    for (const [from, to] of Object.entries(renames)) rename.run(to, from);
+
+    // Move plants that fall outside the new grid into free plots
+    const plants = db.prepare('SELECT id, grid_x, grid_y FROM garden_plants ORDER BY created_at').all();
+    const taken = new Set(plants
+      .filter(p => p.grid_x < GRID.cols && p.grid_y < GRID.rows)
+      .map(p => `${p.grid_x},${p.grid_y}`));
+    const move = db.prepare('UPDATE garden_plants SET grid_x = ?, grid_y = ? WHERE id = ?');
+    for (const p of plants) {
+      if (p.grid_x < GRID.cols && p.grid_y < GRID.rows) continue;
+      let placed = false;
+      for (let y = 0; y < GRID.rows && !placed; y++) {
+        for (let x = 0; x < GRID.cols && !placed; x++) {
+          if (taken.has(`${x},${y}`)) continue;
+          move.run(x, y, p.id);
+          taken.add(`${x},${y}`);
+          placed = true;
+        }
+      }
+      if (!placed) console.warn(`Garden migration: no free plot for plant ${p.id}`);
+    }
+    db.prepare('UPDATE garden_settings SET grid_width = ?, grid_height = ? WHERE id = 1').run(GRID.cols, GRID.rows);
+  })();
 }
 
 module.exports = { getDb };
