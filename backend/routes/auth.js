@@ -10,16 +10,24 @@ const SALT_ROUNDS = 12;
 // POST /api/auth/register
 router.post('/register', async (req, res) => {
   try {
+    const db = getDb();
+
+    // Registration is closed once the first (admin) account exists, unless explicitly re-opened
+    const userCount = db.prepare('SELECT COUNT(*) AS n FROM users').get().n;
+    if (userCount > 0 && process.env.ALLOW_REGISTRATION !== 'true') {
+      return res.status(403).json({ error: 'Registration is closed' });
+    }
+
     const { username, password, displayName } = req.body;
 
-    if (!username || !password || !displayName) {
+    if (typeof username !== 'string' || typeof password !== 'string' || typeof displayName !== 'string'
+        || !username.trim() || !password || !displayName.trim()) {
       return res.status(400).json({ error: 'username, password, and displayName are required' });
     }
     if (password.length < 8) {
       return res.status(400).json({ error: 'Password must be at least 8 characters' });
     }
 
-    const db = getDb();
     const existing = db.prepare('SELECT id FROM users WHERE username = ?').get(username);
     if (existing) {
       return res.status(409).json({ error: 'Username already taken' });
@@ -48,7 +56,7 @@ router.post('/login', async (req, res) => {
   try {
     const { username, password } = req.body;
 
-    if (!username || !password) {
+    if (typeof username !== 'string' || typeof password !== 'string' || !username || !password) {
       return res.status(400).json({ error: 'username and password are required' });
     }
 

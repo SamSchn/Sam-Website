@@ -1,31 +1,8 @@
-import { Routes, Route, useLocation } from 'react-router-dom';
-import { Link } from 'react-router-dom';
-import Home from './pages/Home';
-import Login from './pages/Login';
-import Posts from './pages/Posts';
-import Board from './pages/Board';
+import { Routes, Route, Navigate } from 'react-router-dom';
+import GameRoot from './game/GameRoot';
 import Garden from './pages/Garden';
-import TileEditor from './pages/TileEditor';
-import Village from './pages/Village';
+import VillageEditor from './game/editor/VillageEditor';
 import { useAuth } from './context/AuthContext';
-
-function BackToJungle() {
-  const { user, logout } = useAuth();
-  const location = useLocation();
-  if (location.pathname === '/' || location.pathname === '/garden' || location.pathname === '/editor' || location.pathname === '/village') return null;
-
-  return (
-    <div className="back-bar">
-      <Link to="/" className="back-link">🐒 Back to the Jungle</Link>
-      {user && (
-        <div className="back-bar-user">
-          <span className="back-bar-name">🌿 {user.displayName}</span>
-          <button onClick={logout} className="btn btn-sm">Logout</button>
-        </div>
-      )}
-    </div>
-  );
-}
 
 export default function App() {
   const { loading } = useAuth();
@@ -35,19 +12,23 @@ export default function App() {
   }
 
   return (
-    <div className="app">
-      <BackToJungle />
-      <main className="main">
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/posts" element={<Posts />} />
-          <Route path="/board" element={<Board />} />
-          <Route path="/garden" element={<Garden />} />
-          <Route path="/editor" element={<TileEditor />} />
-          <Route path="/village" element={<Village />} />
-        </Routes>
-      </main>
-    </div>
+    <Routes>
+      {/* The village and every building in it share one persistent game world
+          (a layout route, so moving between them never remounts it) */}
+      <Route element={<GameRoot />}>
+        <Route path="/" element={null} />
+        <Route path="/house" element={null} />
+        <Route path="/login" element={null} />
+      </Route>
+
+      <Route path="/garden" element={<Garden />} />
+      <Route path="/editor" element={<VillageEditor />} />
+
+      {/* Old page URLs now live inside the house */}
+      <Route path="/posts" element={<Navigate to="/house" replace state={{ panel: 'news' }} />} />
+      <Route path="/board" element={<Navigate to="/house" replace state={{ panel: 'board' }} />} />
+      <Route path="/village" element={<Navigate to="/" replace />} />
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </Routes>
   );
 }

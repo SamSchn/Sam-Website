@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { SPRITE_CATEGORIES } from './spriteManifest';
 
-function SheetGrid({ sheet, selectedTile, onSelectTile, onTileProps, animate }) {
+export function SheetGrid({ sheet, selectedTile, onSelectTile, onTileProps, animate }) {
   const [dims, setDims] = useState(null);
   const [dragStart, setDragStart] = useState(null);
   const [dragEnd, setDragEnd] = useState(null);

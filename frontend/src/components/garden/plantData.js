@@ -173,4 +173,23 @@ export function daysSince(dateStr) {
 }
 
 
+// Crop sprite layout (Crops.png: 112×688, 16px tiles, 7 cols × 43 rows)
+export const CROP_MAP = {
+  sunflower: { row: 4, stages: [0, 1, 2, 4, 5] },
+  cactus:    { row: 24, stages: [0, 1, 2, 4, 5] },
+  bonsai:    { row: 32, stages: [0, 1, 2, 4, 5] },
+  herb:      { row: 0, stages: [0, 1, 2, 4, 5] },
+  rose:      { row: 8, stages: [0, 1, 2, 4, 5] },
+  vine:      { row: 16, stages: [0, 1, 2, 4, 5] },
+  mushroom:  { row: 20, stages: [0, 1, 2, 4, 5] },
+  fern:      { row: 12, stages: [0, 1, 2, 4, 5] },
+};
+
+/** Sprite rect for a plant type at a growth stage (for UI thumbnails). */
+export function cropSprite(type, stage = 4) {
+  const c = CROP_MAP[type] || CROP_MAP.sunflower;
+  const col = c.stages[Math.min(stage, c.stages.length - 1)];
+  return { sheet: '/sprites/crops/Crops.png', x: col * 16, y: c.row * 16, w: 16, h: 16 };
+}
+
 export { PLANT_DEFS, GROWTH_LABELS, WITHER_LABELS };

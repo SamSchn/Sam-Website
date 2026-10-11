@@ -6,9 +6,14 @@ async function request(path, options = {}) {
   if (token) headers['Authorization'] = `Bearer ${token}`;
 
   const res = await fetch(`${API_BASE}${path}`, { ...options, headers });
-  const data = await res.json();
+  let data = null;
+  try {
+    data = await res.json();
+  } catch {
+    // Non-JSON response (e.g. proxy error page) — fall through to status handling
+  }
 
-  if (!res.ok) throw new Error(data.error || 'Request failed');
+  if (!res.ok) throw new Error(data?.error || `Request failed (${res.status})`);
   return data;
 }
 
@@ -55,17 +60,15 @@ export const api = {
   updateGardenSettings: (grid_width, grid_height) =>
     request('/garden/settings', { method: 'PUT', body: JSON.stringify({ grid_width, grid_height }) }),
 
-  // Tile Maps
-  getTileMaps: () => request('/tilemap'),
-  getTileMap: (id) => request(`/tilemap/${id}`),
-  createTileMap: (name, width, height) =>
-    request('/tilemap', { method: 'POST', body: JSON.stringify({ name, width, height }) }),
-  updateTileMap: (id, data) =>
-    request(`/tilemap/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
-  deleteTileMap: (id) =>
-    request(`/tilemap/${id}`, { method: 'DELETE' }),
-  saveTileMapCells: (id, cells) =>
-    request(`/tilemap/${id}/cells`, { method: 'PUT', body: JSON.stringify({ cells }) }),
-  deleteTileMapCells: (id, cells) =>
-    request(`/tilemap/${id}/cells`, { method: 'DELETE', body: JSON.stringify({ cells }) }),
+  // Site content (owner-edited About / Projects / Resume / Contact)
+  getContent: () => request('/content'),
+  saveContent: (key, data) =>
+    request(`/content/${key}`, { method: 'PUT', body: JSON.stringify({ data }) }),
+  resetContent: (key) => request(`/content/${key}`, { method: 'DELETE' }),
+
+  // Game maps (editor-saved copies of the built-in village maps)
+  getGameMap: (id) => request(`/game-maps/${id}`),
+  saveGameMap: (id, data) =>
+    request(`/game-maps/${id}`, { method: 'PUT', body: JSON.stringify({ data }) }),
+  resetGameMap: (id) => request(`/game-maps/${id}`, { method: 'DELETE' }),
 };

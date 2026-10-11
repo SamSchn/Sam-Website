@@ -19,7 +19,7 @@ router.get('/', (_req, res) => {
 // POST /api/notes — create sticky note (authenticated)
 router.post('/', authenticateToken, (req, res) => {
   const { content, color, posX, posY } = req.body;
-  if (!content) {
+  if (typeof content !== 'string' || !content.trim()) {
     return res.status(400).json({ error: 'content is required' });
   }
 

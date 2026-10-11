@@ -1,5 +1,7 @@
 import { useState } from 'react';
-import { PLANT_DEFS } from './plantData';
+import Panel from '../../game/ui/Panel';
+import SpriteThumb from '../../game/ui/SpriteThumb';
+import { PLANT_DEFS, cropSprite } from './plantData';
 
 const plantTypes = Object.entries(PLANT_DEFS);
 
@@ -15,55 +17,35 @@ export default function PlantDialog({ gridX, gridY, onPlant, onCancel }) {
   };
 
   return (
-    <div className="plant-dialog-overlay" onClick={onCancel}>
-      <form className="plant-dialog" onClick={(e) => e.stopPropagation()} onSubmit={handleSubmit}>
-        <h3>🌱 Plant a Seed at ({gridX}, {gridY})</h3>
-
-        <label>
+    <Panel title={`Plant a seed (${gridX}, ${gridY})`} icon="sprout" onClose={onCancel}>
+      <form className="compose" onSubmit={handleSubmit}>
+        <label className="ed-field-like">
           What does this plant represent?
-          <input
-            type="text"
-            placeholder="e.g. Learn Rust, Stay healthy..."
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            required
-            autoFocus
-          />
+          <input placeholder="e.g. Learn Rust, Stay healthy..." value={title} onChange={(e) => setTitle(e.target.value)} required autoFocus />
         </label>
-
-        <label>
-          Description (optional)
-          <textarea
-            placeholder="A note about what this means to you..."
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            rows={3}
-          />
+        <label className="ed-field-like">
+          A note about it (optional)
+          <textarea rows={2} value={description} onChange={(e) => setDescription(e.target.value)} />
         </label>
-
-        <div className="plant-type-picker">
-          <span className="plant-type-label">Choose a plant:</span>
-          <div className="plant-type-grid">
-            {plantTypes.map(([key, def]) => (
-              <button
-                key={key}
-                type="button"
-                className={`plant-type-btn ${plantType === key ? 'selected' : ''}`}
-                onClick={() => setPlantType(key)}
-                title={`${def.name} — ${def.represents}`}
-              >
-                <span className="plant-type-icon">{def.icon}</span>
-                <span className="plant-type-name">{def.name}</span>
-              </button>
-            ))}
-          </div>
+        <div className="seed-grid">
+          {plantTypes.map(([key, def]) => (
+            <button
+              key={key}
+              type="button"
+              className={`pixel-inset seed${plantType === key ? ' on' : ''}`}
+              onClick={() => setPlantType(key)}
+              title={`${def.name} — ${def.represents}`}
+            >
+              <SpriteThumb def={cropSprite(key, 4)} size={32} />
+              <span>{def.name}</span>
+            </button>
+          ))}
         </div>
-
-        <div className="plant-dialog-actions">
-          <button type="submit" className="btn btn-primary">🌱 Plant</button>
-          <button type="button" className="btn btn-secondary" onClick={onCancel}>Cancel</button>
+        <div className="plant-actions">
+          <button type="submit" className="pixel-button">Plant it</button>
+          <button type="button" className="pixel-button subtle" onClick={onCancel}>Cancel</button>
         </div>
       </form>
-    </div>
+    </Panel>
   );
 }

@@ -32,8 +32,9 @@ router.get('/types', (_req, res) => {
 // POST /api/garden/plant — plant something (authenticated)
 router.post('/plant', authenticateToken, (req, res) => {
   const { title, description, plant_type, grid_x, grid_y } = req.body;
-  if (!title) return res.status(400).json({ error: 'title is required' });
-  if (grid_x == null || grid_y == null) return res.status(400).json({ error: 'grid position is required' });
+  if (typeof title !== 'string' || !title.trim()) return res.status(400).json({ error: 'title is required' });
+  if (description != null && typeof description !== 'string') return res.status(400).json({ error: 'description must be a string' });
+  if (!Number.isInteger(grid_x) || !Number.isInteger(grid_y)) return res.status(400).json({ error: 'grid position is required' });
   if (plant_type && !PLANT_TYPES.includes(plant_type)) {
     return res.status(400).json({ error: 'Invalid plant type' });
   }
@@ -143,12 +144,20 @@ router.delete('/:id', authenticateToken, (req, res) => {
 // PUT /api/garden/settings — update grid size (authenticated)
 router.put('/settings', authenticateToken, (req, res) => {
   const { grid_width, grid_height } = req.body;
-  if (!grid_width || !grid_height) return res.status(400).json({ error: 'grid_width and grid_height required' });
+  if (!Number.isInteger(grid_width) || !Number.isInteger(grid_height)) {
+    return res.status(400).json({ error: 'grid_width and grid_height must be integers' });
+  }
   if (grid_width < 5 || grid_height < 5 || grid_width > 50 || grid_height > 50) {
     return res.status(400).json({ error: 'Grid size must be between 5 and 50' });
   }
 
   const db = getDb();
+  const stranded = db.prepare(
+    'SELECT COUNT(*) AS n FROM garden_plants WHERE grid_x >= ? OR grid_y >= ?'
+  ).get(grid_width, grid_height).n;
+  if (stranded > 0) {
+    return res.status(409).json({ error: `${stranded} plant(s) would be outside the new grid. Move or remove them first.` });
+  }
   db.prepare('UPDATE garden_settings SET grid_width = ?, grid_height = ? WHERE id = 1').run(grid_width, grid_height);
   const settings = db.prepare('SELECT * FROM garden_settings WHERE id = 1').get();
   res.json(settings);

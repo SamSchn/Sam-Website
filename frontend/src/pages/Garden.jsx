@@ -1,13 +1,26 @@
-import { useState, useEffect, useCallback } from 'react';
-import { Link } from 'react-router-dom';
+import { useState, useEffect, useCallback, useRef } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { api } from '../api';
 import { useAuth } from '../context/AuthContext';
 import GardenCanvas from '../components/garden/GardenCanvas';
 import PlantInfoPanel from '../components/garden/PlantInfoPanel';
 import PlantDialog from '../components/garden/PlantDialog';
+import { Clock, LocationBanner } from '../game/ui/Hud';
+import { daylight } from '../game/engine/daylight';
+import '../game/game.css';
 
 export default function Garden() {
   const { user } = useAuth();
+  const location = useLocation();
+  const navigate = useNavigate();
+  const [leaving, setLeaving] = useState(false);
+  const [tint, setTint] = useState(() => daylight(null, true).tint);
+
+  // same real-time day/night colouring as the village
+  useEffect(() => {
+    const t = setInterval(() => setTint(daylight(null, true).tint), 60000);
+    return () => clearInterval(t);
+  }, []);
   const [plants, setPlants] = useState([]);
   const [gridWidth, setGridWidth] = useState(15);
   const [gridHeight, setGridHeight] = useState(15);
@@ -17,10 +30,13 @@ export default function Garden() {
 
   const interactionOpen = !!(selectedPlant || plantingAt);
 
+  const toastTimer = useRef(null);
   const showToast = (msg) => {
     setToast(msg);
-    setTimeout(() => setToast(''), 3000);
+    clearTimeout(toastTimer.current);
+    toastTimer.current = setTimeout(() => setToast(''), 3000);
   };
+  useEffect(() => () => clearTimeout(toastTimer.current), []);
 
   // Load garden data
   useEffect(() => {
@@ -51,6 +67,11 @@ export default function Garden() {
   }, []);
 
   // Character interaction callback
+  const leaveToVillage = useCallback(() => {
+    setLeaving(true);
+    setTimeout(() => navigate('/', { state: { from: 'garden' } }), 280);
+  }, [navigate]);
+
   const handleInteract = useCallback((interaction) => {
     if (interaction.type === 'plant') {
       setSelectedPlant(interaction.plant);
@@ -118,7 +139,7 @@ export default function Garden() {
   };
 
   return (
-    <div className="garden-game">
+    <div className="game-root garden-game">
       {/* Game canvas (full screen) */}
       <GardenCanvas
         plants={plants}
@@ -127,37 +148,37 @@ export default function Garden() {
         onInteract={handleInteract}
         interactionOpen={interactionOpen}
         isAuthenticated={!!user}
+        onExit={leaveToVillage}
+        spawnAtGate={location.state?.from === 'village'}
       />
 
-      {/* HUD overlay */}
-      <div className="garden-hud">
-        <Link to="/" className="garden-hud-back">🐒 Back to Jungle</Link>
-        {user && <span className="garden-hud-user">🌿 {user.displayName}</span>}
-        <div className="garden-hud-controls">
-          WASD to move &bull; E to interact
-          {!user && ' &bull; Walk to a plant to send sunshine ☀️'}
-        </div>
+      <div className="garden-tint" style={{ background: `#${tint.toString(16).padStart(6, '0')}` }} aria-hidden />
+
+      {/* HUD — same pieces as the village */}
+      <Clock />
+      <LocationBanner name="Sam's Garden" />
+      <Link to="/" state={{ from: 'garden' }} className="pixel-button small garden-back">← Village</Link>
+      <div className="controls-hint pixel-frame">
+        <kbd>WASD</kbd> move · <kbd>E</kbd> {user ? 'tend plants' : 'send sunshine'} · walk south to leave
       </div>
 
+      <div className={`fade${leaving ? ' on' : ''}`} aria-hidden />
+
       {/* Toast notifications */}
-      {toast && <div className="garden-toast">{toast}</div>}
+      {toast && <div className="garden-toast pixel-frame">{toast}</div>}
 
       {/* Plant info popup */}
       {selectedPlant && (
-        <div className="garden-popup-overlay" onClick={() => setSelectedPlant(null)}>
-          <div className="garden-popup" onClick={(e) => e.stopPropagation()}>
-            <PlantInfoPanel
-              plant={selectedPlant}
-              user={user}
-              onWater={handleWater}
-              onWither={handleWither}
-              onRevive={handleRevive}
-              onSunshine={handleSunshine}
-              onDelete={handleDelete}
-              onClose={() => setSelectedPlant(null)}
-            />
-          </div>
-        </div>
+        <PlantInfoPanel
+          plant={selectedPlant}
+          user={user}
+          onWater={handleWater}
+          onWither={handleWither}
+          onRevive={handleRevive}
+          onSunshine={handleSunshine}
+          onDelete={handleDelete}
+          onClose={() => setSelectedPlant(null)}
+        />
       )}
 
       {/* Plant dialog popup */}

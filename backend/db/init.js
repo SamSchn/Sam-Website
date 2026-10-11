@@ -73,6 +73,20 @@ function createTables() {
 
     INSERT OR IGNORE INTO garden_settings (id, grid_width, grid_height) VALUES (1, 15, 15);
 
+    -- Owner-edited site content (About, Projects, ...) as JSON, see routes/content.js
+    CREATE TABLE IF NOT EXISTS site_content (
+      key TEXT PRIMARY KEY,
+      data TEXT NOT NULL,
+      updated_at TEXT DEFAULT (datetime('now'))
+    );
+
+    -- Edited copies of the built-in game maps (JSON), see routes/gameMaps.js
+    CREATE TABLE IF NOT EXISTS game_maps (
+      id TEXT PRIMARY KEY,
+      data TEXT NOT NULL,
+      updated_at TEXT DEFAULT (datetime('now'))
+    );
+
     -- Tile Map Editor tables
     CREATE TABLE IF NOT EXISTS tile_maps (
       id INTEGER PRIMARY KEY AUTOINCREMENT,

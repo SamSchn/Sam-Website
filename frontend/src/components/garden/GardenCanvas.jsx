@@ -4,7 +4,7 @@ import {
   Text, TextStyle, Texture, Rectangle, Assets,
 } from 'pixi.js';
 import { TextureStyle } from 'pixi.js';
-import { getPlantDef } from './plantData';
+import { getPlantDef, CROP_MAP } from './plantData';
 
 const TILE = 48;
 const PX = 16;            // native sprite pixel size
@@ -25,17 +25,7 @@ const ANIM = {
   walk_up:    { row: 5, frames: 6 },
 };
 
-// Crop sprite layout (Crops.png: 112×688, 16px tiles, 7 cols × 43 rows)
-const CROP_MAP = {
-  sunflower: { row: 4, stages: [0, 1, 2, 4, 5] },
-  cactus:    { row: 24, stages: [0, 1, 2, 4, 5] },
-  bonsai:    { row: 32, stages: [0, 1, 2, 4, 5] },
-  herb:      { row: 0, stages: [0, 1, 2, 4, 5] },
-  rose:      { row: 8, stages: [0, 1, 2, 4, 5] },
-  vine:      { row: 16, stages: [0, 1, 2, 4, 5] },
-  mushroom:  { row: 20, stages: [0, 1, 2, 4, 5] },
-  fern:      { row: 12, stages: [0, 1, 2, 4, 5] },
-};
+
 
 // Pond shape templates (relative tile offsets — rectangular-ish for clean autotiling)
 const POND_SHAPES = [
@@ -56,6 +46,8 @@ export default function GardenCanvas({
   onInteract,
   interactionOpen,
   isAuthenticated,
+  onExit,
+  spawnAtGate,
 }) {
   const containerRef = useRef(null);
   const appRef = useRef(null);
@@ -64,11 +56,14 @@ export default function GardenCanvas({
   const onInteractRef = useRef(onInteract);
   const interactionOpenRef = useRef(interactionOpen);
   const isAuthRef = useRef(isAuthenticated);
+  const onExitRef = useRef(onExit);
+  const spawnAtGateRef = useRef(spawnAtGate);
 
   useEffect(() => { plantsRef.current = plants; }, [plants]);
   useEffect(() => { onInteractRef.current = onInteract; }, [onInteract]);
   useEffect(() => { interactionOpenRef.current = interactionOpen; }, [interactionOpen]);
   useEffect(() => { isAuthRef.current = isAuthenticated; }, [isAuthenticated]);
+  useEffect(() => { onExitRef.current = onExit; }, [onExit]);
 
   // Re-render plants when data changes
   useEffect(() => {
@@ -105,14 +100,21 @@ export default function GardenCanvas({
       });
       if (cancelled) { app.destroy(true); return; }
 
+      // ---- Load textures ----
+      let textures;
+      try {
+        textures = await loadTextures();
+      } catch (err) {
+        console.error('Garden: failed to load sprites', err);
+        app.destroy(true);
+        return;
+      }
+      if (cancelled) { app.destroy(true); return; }
+
       el.appendChild(app.canvas);
       app.canvas.style.width = '100%';
       app.canvas.style.height = '100%';
       appRef.current = app;
-
-      // ---- Load textures ----
-      const textures = await loadTextures();
-      if (cancelled) { app.destroy(true); return; }
 
       const world = new Container();
       app.stage.addChild(world);
@@ -186,7 +188,16 @@ export default function GardenCanvas({
 
       // ---- Game state ----
       const state = {
-        player: {
+        player: spawnAtGateRef.current ? {
+          // arriving from the village: start on the path below the gate
+          x: gardenOX + (gateStart + 1) * TILE,
+          y: worldH - TILE * 2,
+          facing: 'up',
+          moving: false,
+          walkTime: 0,
+          animFrame: 0,
+          animTimer: 0,
+        } : {
           x: gardenOX + (gridWidth * TILE) / 2,
           y: gardenOY + (gridHeight * TILE) / 2,
           facing: 'down',
@@ -207,8 +218,8 @@ export default function GardenCanvas({
         textures,
       };
 
-      state.camera.x = state.player.x - app.screen.width / 2;
-      state.camera.y = state.player.y - app.screen.height / 2;
+      state.camera.x = Math.max(0, Math.min(worldW - app.screen.width, state.player.x - app.screen.width / 2));
+      state.camera.y = Math.max(0, Math.min(worldH - app.screen.height, state.player.y - app.screen.height / 2));
       stateRef.current = state;
 
       // ---- Keyboard ----
@@ -240,8 +251,12 @@ export default function GardenCanvas({
         state.keys.delete(e.key.toLowerCase());
       };
 
+      // Keyup never fires if focus leaves the window mid-press; drop held keys
+      const onBlur = () => state.keys.clear();
+
       window.addEventListener('keydown', onKeyDown);
       window.addEventListener('keyup', onKeyUp);
+      window.addEventListener('blur', onBlur);
 
       // ---- Game loop ----
 
@@ -273,6 +288,13 @@ export default function GardenCanvas({
           player.x = Math.max(TILE * 0.5, Math.min(worldW - TILE * 0.5, player.x + dx * spd));
           player.y = Math.max(TILE * 0.5, Math.min(worldH - TILE * 0.5, player.y + dy * spd));
           player.walkTime += dt * 8;
+
+          // Walking off the bottom of the path leads back to the village
+          const onPath = player.x >= gardenOX + gateStart * TILE - TILE / 2 && player.x <= gardenOX + gateEnd * TILE + TILE / 2;
+          if (dy > 0 && onPath && player.y >= worldH - TILE * 0.6 && !state.exited) {
+            state.exited = true;
+            onExitRef.current?.();
+          }
         }
 
         // Animation frame update
@@ -283,8 +305,10 @@ export default function GardenCanvas({
         }
 
         // Camera
-        const tCX = player.x - app.screen.width / 2;
-        const tCY = player.y - app.screen.height / 2;
+        // Keep the camera inside the world so the edges never show empty space
+        const clampCam = (v, view, world) => (world <= view ? (world - view) / 2 : Math.max(0, Math.min(world - view, v)));
+        const tCX = clampCam(player.x - app.screen.width / 2, app.screen.width, worldW);
+        const tCY = clampCam(player.y - app.screen.height / 2, app.screen.height, worldH);
         camera.x += (tCX - camera.x) * CAM_LERP;
         camera.y += (tCY - camera.y) * CAM_LERP;
         world.x = Math.round(-camera.x);
@@ -338,20 +362,20 @@ export default function GardenCanvas({
       return () => {
         window.removeEventListener('keydown', onKeyDown);
         window.removeEventListener('keyup', onKeyUp);
+        window.removeEventListener('blur', onBlur);
         window.removeEventListener('resize', onResize);
+        app.destroy(true, { children: true });
+        appRef.current = null;
       };
     };
 
+    // If we unmount before init finishes, initApp sees `cancelled` and destroys the app itself
     let cleanup;
     initApp().then((c) => { cleanup = c; });
 
     return () => {
       cancelled = true;
       if (cleanup) cleanup();
-      if (appRef.current) {
-        appRef.current.destroy(true, { children: true });
-        appRef.current = null;
-      }
       stateRef.current = null;
     };
   }, [gridWidth, gridHeight]);
@@ -418,16 +442,16 @@ async function loadTextures() {
     Assets.load('/sprites/tiles/Water_Tile_1.png'),
     Assets.load('/sprites/tiles/Water_Middle.png'),
     Assets.load('/sprites/tiles/Water_Decoration.png'),
-    Assets.load('/sprites/decor/Flower_Grass_1_Anim.png'),
-    Assets.load('/sprites/decor/Flower_Grass_5_Anim.png'),
-    Assets.load('/sprites/decor/Flower_Grass_6_Anim.png'),
-    Assets.load('/sprites/decor/Flower_Grass_8_Anim.png'),
-    Assets.load('/sprites/decor/muschroom_1_Anim.png'),
-    Assets.load('/sprites/decor/muschroom_2_Anim.png'),
-    Assets.load('/sprites/decor/Rock_1_Anim.png'),
-    Assets.load('/sprites/decor/Rock_2_Anim.png'),
-    Assets.load('/sprites/decor/Lillypad_Green_1_Anim.png'),
-    Assets.load('/sprites/decor/Lillypad_Purple_1_Anim.png'),
+    Assets.load('/animations/decor/Flower_Grass_1_Anim.png'),
+    Assets.load('/animations/decor/Flower_Grass_5_Anim.png'),
+    Assets.load('/animations/decor/Flower_Grass_6_Anim.png'),
+    Assets.load('/animations/decor/Flower_Grass_8_Anim.png'),
+    Assets.load('/animations/decor/muschroom_1_Anim.png'),
+    Assets.load('/animations/decor/muschroom_2_Anim.png'),
+    Assets.load('/animations/decor/Rock_1_Anim.png'),
+    Assets.load('/animations/decor/Rock_2_Anim.png'),
+    Assets.load('/animations/decor/Lillypad_Green_1_Anim.png'),
+    Assets.load('/animations/decor/Lillypad_Purple_1_Anim.png'),
     Assets.load('/sprites/animals/Frog_01.png'),
   ]);
 
@@ -560,8 +584,6 @@ function extractFrame(texture, x, y, w, h) {
 // ===== Player Rendering =====
 
 function drawPlayerSprite(container, player, textures) {
-  container.removeChildren();
-
   const { facing, moving, animFrame } = player;
 
   let animName;
@@ -578,17 +600,19 @@ function drawPlayerSprite(container, player, textures) {
   const frameIdx = animFrame % textures.playerAnims[animName].length;
   const layerTextures = textures.playerAnims[animName][frameIdx];
 
-  for (const tex of layerTextures) {
-    const s = new Sprite(tex);
+  // Reuse one sprite per clothing layer instead of allocating new ones every frame
+  while (container.children.length < layerTextures.length) {
+    const s = new Sprite();
     s.anchor.set(0.484, 0.625);
-    s.x = player.x;
-    s.y = player.y;
-    s.scale.set(SCALE, SCALE);
-    if (facing === 'left') {
-      s.scale.x = -SCALE;
-    }
     container.addChild(s);
   }
+  layerTextures.forEach((tex, i) => {
+    const s = container.children[i];
+    s.texture = tex;
+    s.x = player.x;
+    s.y = player.y;
+    s.scale.set(facing === 'left' ? -SCALE : SCALE, SCALE);
+  });
 }
 
 // ===== Fence Building =====
@@ -907,7 +931,8 @@ function generateForest(container, textures, worldTilesW, worldTilesH, gardenOX,
 // ===== Plant Rendering =====
 
 function renderPlants(container, plants, gardenOX, gardenOY, textures) {
-  container.removeChildren();
+  // Destroy old children so their Text canvases are freed
+  for (const child of container.removeChildren()) child.destroy();
   if (!textures) return;
 
   plants.forEach((plant) => {
